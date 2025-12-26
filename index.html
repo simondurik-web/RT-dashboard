@@ -2,83 +2,698 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Debug Dashboard - Data Inspection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Roll Tech P&L Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     <style>
+        /* ===== VARIABLES ===== */
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2c5282;
+            --accent: #3182ce;
+            --success: #38a169;
+            --danger: #e53e3e;
+            --warning: #d69e2e;
+            --bg-dark: #1a202c;
+            --bg-card: #2d3748;
+            --text-primary: #f7fafc;
+            --text-secondary: #a0aec0;
+            --border: #4a5568;
+        }
+
+        /* ===== BASE STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: monospace;
-            padding: 20px;
-            background: #1a202c;
-            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #0d1421 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-        .section {
-            background: #2d3748;
-            padding: 20px;
-            margin: 20px 0;
+
+        /* ===== MOBILE-FIRST LAYOUT ===== */
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Mobile Header */
+        .mobile-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .mobile-header h1 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .mobile-header .subtitle {
+            font-size: 11px;
+            color: var(--text-secondary);
+            display: block;
+        }
+
+        .menu-toggle {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
             border-radius: 8px;
-            border: 1px solid #4a5568;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        h2 {
-            color: #63b3ed;
-            margin-top: 0;
+
+        /* Sidebar - Hidden on mobile by default */
+        .sidebar {
+            position: fixed;
+            left: -100%;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 2000;
+            transition: left 0.3s ease;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.3);
         }
-        h3 {
-            color: #48bb78;
+
+        .sidebar.open {
+            left: 0;
         }
-        .good { color: #48bb78; }
-        .bad { color: #f56565; }
-        pre {
-            background: #1a202c;
-            padding: 15px;
-            border-radius: 4px;
-            overflow-x: auto;
-            font-size: 12px;
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1999;
+            display: none;
         }
-        .loading {
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .logo {
             text-align: center;
-            padding: 50px;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
         }
+
+        .logo h1 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .logo span {
+            font-size: 11px;
+            color: var(--text-secondary);
+            display: block;
+            margin-top: 5px;
+        }
+
+        .nav-section {
+            margin-bottom: 20px;
+        }
+
+        .nav-section-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            padding-left: 10px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 14px;
+            margin: 4px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, var(--accent) 0%, #4299e1 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(49,130,206,0.4);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 20px;
+            flex: 1;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 20px;
+        }
+
+        .page-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        /* Loading State */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            text-align: center;
+        }
+
         .spinner {
             width: 50px;
             height: 50px;
             border: 4px solid rgba(255,255,255,0.1);
-            border-top-color: #63b3ed;
+            border-top-color: var(--accent);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
-            margin: 0 auto 20px;
+            margin-bottom: 20px;
         }
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        table {
+
+        /* Stats Grid - Mobile Responsive */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-card .label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .stat-card .value.positive { color: var(--success); }
+        .stat-card .value.negative { color: var(--danger); }
+
+        /* Charts */
+        .chart-container {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .chart-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Tables - Mobile Optimized */
+        .table-container {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 10px 0;
+            min-width: 600px; /* Allow horizontal scroll on small screens */
         }
-        th, td {
+
+        .data-table th {
+            background: var(--primary);
+            color: white;
+            padding: 12px 10px;
             text-align: left;
-            padding: 8px;
-            border: 1px solid #4a5568;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            position: sticky;
+            top: 0;
+            white-space: nowrap;
         }
-        th {
-            background: #1a365d;
+
+        .data-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
         }
+
+        .data-table tr:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .data-table .positive { color: var(--success); font-weight: 600; }
+        .data-table .negative { color: var(--danger); font-weight: 600; }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge.shipped { background: var(--success); color: white; }
+        .badge.forecast { background: var(--warning); color: #1a202c; }
+
+        /* Search Box */
+        .search-box {
+            width: 100%;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: white;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* Refresh Button */
+        .refresh-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .refresh-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Error Message */
+        .error-message {
+            background: var(--danger);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        /* Desktop Styles */
+        @media (min-width: 768px) {
+            .mobile-header {
+                display: none;
+            }
+
+            .sidebar {
+                left: 0;
+                position: fixed;
+            }
+
+            .sidebar-overlay {
+                display: none !important;
+            }
+
+            .main-content {
+                margin-left: 280px;
+                padding: 30px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .page-header h2 {
+                font-size: 32px;
+            }
+
+            .chart-wrapper {
+                height: 400px;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* Utility Classes */
+        .text-center { text-align: center; }
+        .mb-10 { margin-bottom: 10px; }
+        .mb-20 { margin-bottom: 20px; }
+        .mt-20 { margin-top: 20px; }
     </style>
 </head>
 <body>
-    <h1>🔍 Dashboard Debug Mode</h1>
-    <p>This will show you EXACTLY what data is being loaded from your Google Sheet</p>
-    
-    <div id="loading" class="loading">
-        <div class="spinner"></div>
-        <h2>Loading data from Google Sheets...</h2>
+    <div class="dashboard-container">
+        <!-- Mobile Header -->
+        <div class="mobile-header">
+            <div>
+                <h1>Roll Tech</h1>
+                <span class="subtitle">P&L Analytics</span>
+            </div>
+            <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        </div>
+
+        <!-- Sidebar Overlay (Mobile) -->
+        <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1>Roll Tech</h1>
+                <span>P&L Analytics Dashboard</span>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Dashboards</div>
+                <div class="nav-item active" data-page="overview" onclick="navigateTo('overview')">
+                    📊 Overview
+                </div>
+                <div class="nav-item" data-page="parts" onclick="navigateTo('parts')">
+                    🔧 Parts Analysis
+                </div>
+                <div class="nav-item" data-page="customers" onclick="navigateTo('customers')">
+                    👥 Customer Analysis
+                </div>
+                <div class="nav-item" data-page="dates" onclick="navigateTo('dates')">
+                    📅 Date Analysis
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Tools</div>
+                <div class="nav-item" data-page="bom" onclick="navigateTo('bom')">
+                    📋 BOM Explorer
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Loading State -->
+            <div id="loadingState" class="loading">
+                <div class="spinner"></div>
+                <h2>Loading Dashboard...</h2>
+                <p style="color: var(--text-secondary); margin-top: 10px;">Reading configuration and data</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="errorState" style="display: none;">
+                <div class="error-message">
+                    <h3>⚠️ Error Loading Dashboard</h3>
+                    <p id="errorMessage"></p>
+                </div>
+                <button class="refresh-btn" onclick="location.reload()">
+                    🔄 Reload Dashboard
+                </button>
+            </div>
+
+            <!-- Overview Page -->
+            <div id="overview" class="page">
+                <div class="page-header">
+                    <h2>Dashboard Overview</h2>
+                    <p>Summary of P&L performance across all orders</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="label">Total Revenue</div>
+                        <div class="value" id="statRevenue">$0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Total P/L</div>
+                        <div class="value" id="statPL">$0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Total Quantity</div>
+                        <div class="value" id="statQuantity">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">Total Orders</div>
+                        <div class="value" id="statOrders">0</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Top 10 Parts by P/L</h3>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="topPartsChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Customer Distribution</h3>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="customerPieChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Monthly Trend</h3>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="monthlyTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parts Analysis Page -->
+            <div id="parts" class="page">
+                <div class="page-header">
+                    <h2>Parts Analysis</h2>
+                    <p>Detailed breakdown by part number</p>
+                </div>
+
+                <input type="text" class="search-box" id="partsSearch" placeholder="Search parts...">
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Part Number</th>
+                                <th>Orders</th>
+                                <th>Quantity</th>
+                                <th>Revenue</th>
+                                <th>P/L</th>
+                                <th>Margin %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="partsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Customers Analysis Page -->
+            <div id="customers" class="page">
+                <div class="page-header">
+                    <h2>Customer Analysis</h2>
+                    <p>Performance breakdown by customer</p>
+                </div>
+
+                <input type="text" class="search-box" id="customersSearch" placeholder="Search customers...">
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Orders</th>
+                                <th>Quantity</th>
+                                <th>Revenue</th>
+                                <th>P/L</th>
+                                <th>Margin %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Date Analysis Page -->
+            <div id="dates" class="page">
+                <div class="page-header">
+                    <h2>Date Analysis</h2>
+                    <p>Performance by time period</p>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Status</th>
+                                <th>Orders</th>
+                                <th>Quantity</th>
+                                <th>Revenue</th>
+                                <th>P/L</th>
+                            </tr>
+                        </thead>
+                        <tbody id="datesTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- BOM Explorer Page -->
+            <div id="bom" class="page">
+                <div class="page-header">
+                    <h2>BOM Explorer</h2>
+                    <p>Bill of Materials reference</p>
+                </div>
+
+                <input type="text" class="search-box" id="bomSearch" placeholder="Search BOM items...">
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Part Name</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bomTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="results" style="display: none;"></div>
-
     <script>
+        // ===== GLOBAL STATE =====
+        let config = {};
+        let ordersData = [];
+        let bomData = [];
+        let charts = {};
+        
+        // IMPORTANT: Replace with your Google Sheet ID
         const SHEET_ID = '1bK0Ne-vX3i5wGoqyAklnyFDUNdE-WaN4Xs5XjggBSXw';
         const CONFIG_GID = '912029812';
+
+        // ===== UTILITY FUNCTIONS =====
+        function parseNumber(value) {
+            // Parse numbers that might have $ signs, commas, or be empty
+            if (!value || value === '') return 0;
+            if (typeof value === 'number') return value;
+            // Remove $ signs, commas, and spaces
+            const cleaned = String(value).replace(/[$,\s]/g, '');
+            const num = parseFloat(cleaned);
+            return isNaN(num) ? 0 : num;
+        }
+
+        function formatCurrency(value) {
+            if (value == null || isNaN(value)) return '$0';
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+
+        function formatNumber(value) {
+            if (value == null || isNaN(value)) return '0';
+            return new Intl.NumberFormat('en-US').format(value);
+        }
 
         function parseCSV(text) {
             const lines = text.split('\n');
@@ -94,20 +709,21 @@
                 });
                 data.push(row);
             }
-            return { headers, data };
+            return data;
         }
 
         async function fetchSheetData(gid) {
             const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`;
             const response = await fetch(url);
-            if (!response.ok) throw new Error(`Failed to fetch GID ${gid}: ${response.status}`);
+            if (!response.ok) throw new Error(`Failed to fetch data from GID ${gid}`);
             const text = await response.text();
             return parseCSV(text);
         }
 
         function parseColumnMappings(mappingText) {
             if (!mappingText) return {};
-            const lines = mappingText.split('\n');
+            // Split by semicolon OR newline to handle both formats
+            const lines = mappingText.split(/[;\n]/);
             const mappings = {};
             lines.forEach(line => {
                 const match = line.match(/(.+?)\s*→\s*(.+)/);
@@ -118,142 +734,429 @@
             return mappings;
         }
 
-        async function debugDashboard() {
-            const resultsDiv = document.getElementById('results');
-            let html = '';
+        function applyMapping(row, mapping) {
+            const mapped = {};
+            for (const [fieldName, columnName] of Object.entries(mapping)) {
+                mapped[fieldName] = row[columnName] || '';
+            }
+            return mapped;
+        }
 
+        // ===== NAVIGATION =====
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        function navigateTo(pageName) {
+            // Update nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.page === pageName) {
+                    item.classList.add('active');
+                }
+            });
+
+            // Update pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageName).classList.add('active');
+
+            // Close sidebar on mobile
+            if (window.innerWidth < 768) {
+                toggleSidebar();
+            }
+        }
+
+        // ===== DATA LOADING =====
+        async function loadDashboard() {
             try {
-                // Load Dashboard Config
-                html += '<div class="section">';
-                html += '<h2>Step 1: Dashboard Config</h2>';
-                
-                const configResult = await fetchSheetData(CONFIG_GID);
-                html += `<p class="good">✅ Successfully loaded ${configResult.data.length} rows</p>`;
-                html += '<h3>Config Data:</h3>';
-                html += '<table><tr>';
-                configResult.headers.forEach(h => html += `<th>${h}</th>`);
-                html += '</tr>';
-                configResult.data.slice(0, 10).forEach(row => {
-                    html += '<tr>';
-                    configResult.headers.forEach(h => html += `<td>${row[h] || ''}</td>`);
-                    html += '</tr>';
-                });
-                html += '</table>';
+                // Step 1: Load Dashboard Config
+                console.log('Loading Dashboard Config...');
+                const configData = await fetchSheetData(CONFIG_GID);
+                console.log('Config data:', configData);
 
                 // Parse config
-                const config = {};
-                configResult.data.forEach(row => {
+                config = {};
+                configData.forEach(row => {
                     if (row['Dashboard Name'] === 'P&L Dashboard' && row['GID Number']) {
                         const tabName = row['Tab Name'];
                         const gid = row['GID Number'];
                         const mappings = parseColumnMappings(row['Column Mappings']);
-                        config[tabName] = { gid, mappings };
+                        
+                        config[tabName] = {
+                            gid: gid,
+                            mappings: mappings
+                        };
                     }
                 });
 
-                html += '<h3>Parsed Mappings:</h3>';
-                html += '<pre>' + JSON.stringify(config, null, 2) + '</pre>';
-                html += '</div>';
+                console.log('Parsed config:', config);
 
-                // Load Orders Data
+                // Step 2: Load Orders Data
                 if (config['Orders Data']) {
-                    html += '<div class="section">';
-                    html += '<h2>Step 2: Orders Data</h2>';
-                    
-                    const ordersResult = await fetchSheetData(config['Orders Data'].gid);
-                    html += `<p class="good">✅ Successfully loaded ${ordersResult.data.length} rows</p>`;
-                    
-                    html += '<h3>Available Columns:</h3>';
-                    html += '<pre>' + JSON.stringify(ordersResult.headers, null, 2) + '</pre>';
-                    
-                    html += '<h3>First 5 Rows (RAW DATA):</h3>';
-                    html += '<table><tr>';
-                    ordersResult.headers.slice(0, 20).forEach(h => html += `<th>${h}</th>`);
-                    html += '</tr>';
-                    ordersResult.data.slice(0, 5).forEach(row => {
-                        html += '<tr>';
-                        ordersResult.headers.slice(0, 20).forEach(h => {
-                            const value = row[h] || '';
-                            html += `<td>${value}</td>`;
-                        });
-                        html += '</tr>';
-                    });
-                    html += '</table>';
+                    console.log('Loading Orders Data...');
+                    const rawData = await fetchSheetData(config['Orders Data'].gid);
+                    ordersData = rawData.map(row => applyMapping(row, config['Orders Data'].mappings))
+                        .filter(row => row.partNumber); // Filter out empty rows
+                    console.log('Loaded', ordersData.length, 'orders');
+                }
 
-                    // Show mapped data
-                    html += '<h3>Mapped Data (What Dashboard Sees):</h3>';
-                    const mappings = config['Orders Data'].mappings;
-                    
-                    html += '<p><strong>Expected Mappings:</strong></p>';
-                    html += '<pre>' + JSON.stringify(mappings, null, 2) + '</pre>';
+                // Step 3: Load BOM Data
+                if (config['BOM individual items Reference data']) {
+                    console.log('Loading BOM Data...');
+                    const rawBOM = await fetchSheetData(config['BOM individual items Reference data'].gid);
+                    bomData = rawBOM.map(row => applyMapping(row, config['BOM individual items Reference data'].mappings))
+                        .filter(row => row.partName);
+                    console.log('Loaded', bomData.length, 'BOM items');
+                }
 
-                    function applyMapping(row, mapping) {
-                        const mapped = {};
-                        for (const [fieldName, columnName] of Object.entries(mapping)) {
-                            const value = row[columnName];
-                            mapped[fieldName] = value !== undefined ? value : '❌ MISSING';
+                // Hide loading, show dashboard
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('overview').classList.add('active');
+
+                // Initialize dashboard
+                initializeDashboard();
+
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('errorState').style.display = 'block';
+                document.getElementById('errorMessage').textContent = error.message;
+            }
+        }
+
+        // ===== DASHBOARD INITIALIZATION =====
+        function initializeDashboard() {
+            updateStats();
+            updateTopPartsChart();
+            updateCustomerPieChart();
+            updateMonthlyTrendChart();
+            updatePartsTable();
+            updateCustomersTable();
+            updateDatesTable();
+            updateBOMTable();
+        }
+
+        function updateStats() {
+            const totalRevenue = ordersData.reduce((sum, row) => sum + (parseNumber(row.revenue) || 0), 0);
+            const totalPL = ordersData.reduce((sum, row) => sum + (parseNumber(row.profitLoss) || 0), 0);
+            const totalQty = ordersData.reduce((sum, row) => sum + (parseNumber(row.quantity) || 0), 0);
+            const totalOrders = ordersData.length;
+
+            document.getElementById('statRevenue').textContent = formatCurrency(totalRevenue);
+            document.getElementById('statPL').textContent = formatCurrency(totalPL);
+            document.getElementById('statPL').className = 'value ' + (totalPL >= 0 ? 'positive' : 'negative');
+            document.getElementById('statQuantity').textContent = formatNumber(totalQty);
+            document.getElementById('statOrders').textContent = formatNumber(totalOrders);
+        }
+
+        function updateTopPartsChart() {
+            // Group by part number
+            const partStats = {};
+            ordersData.forEach(row => {
+                const part = row.partNumber;
+                if (!partStats[part]) partStats[part] = { revenue: 0, pl: 0, qty: 0, orders: 0 };
+                partStats[part].revenue += parseNumber(row.revenue) || 0;
+                partStats[part].pl += parseNumber(row.profitLoss) || 0;
+                partStats[part].qty += parseNumber(row.quantity) || 0;
+                partStats[part].orders++;
+            });
+
+            // Get top 10 by P/L
+            const sorted = Object.entries(partStats)
+                .sort((a, b) => b[1].pl - a[1].pl)
+                .slice(0, 10);
+
+            const ctx = document.getElementById('topPartsChart');
+            if (charts.topParts) charts.topParts.destroy();
+            
+            charts.topParts = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sorted.map(([part]) => part),
+                    datasets: [{
+                        label: 'P/L',
+                        data: sorted.map(([, stats]) => stats.pl),
+                        backgroundColor: sorted.map(([, stats]) => stats.pl >= 0 ? '#38a169' : '#e53e3e')
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => formatCurrency(context.raw)
+                            }
                         }
-                        return mapped;
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: (value) => formatCurrency(value),
+                                color: '#a0aec0'
+                            },
+                            grid: { color: '#4a5568' }
+                        },
+                        x: {
+                            ticks: { color: '#a0aec0' },
+                            grid: { display: false }
+                        }
                     }
+                }
+            });
+        }
 
-                    html += '<table><tr>';
-                    Object.keys(mappings).forEach(field => html += `<th>${field}</th>`);
-                    html += '</tr>';
-                    
-                    ordersResult.data.slice(0, 5).forEach(row => {
-                        const mapped = applyMapping(row, mappings);
-                        html += '<tr>';
-                        Object.values(mapped).forEach(value => {
-                            const isMissing = value === '❌ MISSING';
-                            html += `<td class="${isMissing ? 'bad' : 'good'}">${value}</td>`;
-                        });
-                        html += '</tr>';
-                    });
-                    html += '</table>';
+        function updateCustomerPieChart() {
+            const customerStats = {};
+            ordersData.forEach(row => {
+                const customer = row.customer;
+                if (!customerStats[customer]) customerStats[customer] = 0;
+                customerStats[customer] += parseNumber(row.revenue) || 0;
+            });
 
-                    // Check specific columns
-                    html += '<h3>Column Name Verification:</h3>';
-                    html += '<table><tr><th>Expected Column</th><th>Actual Column</th><th>Status</th></tr>';
-                    for (const [field, expectedCol] of Object.entries(mappings)) {
-                        const exists = ordersResult.headers.includes(expectedCol);
-                        const status = exists 
-                            ? `<span class="good">✅ Found</span>` 
-                            : `<span class="bad">❌ Not Found</span>`;
-                        html += `<tr><td>${field}</td><td>${expectedCol}</td><td>${status}</td></tr>`;
-                        
-                        if (!exists) {
-                            // Find similar columns
-                            const similar = ordersResult.headers.filter(h => 
-                                h.toLowerCase().includes(expectedCol.toLowerCase().split(' ')[0])
-                            );
-                            if (similar.length > 0) {
-                                html += `<tr><td colspan="3" style="background: #744210;">💡 Did you mean: ${similar.join(', ')}?</td></tr>`;
+            const sorted = Object.entries(customerStats)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+
+            const ctx = document.getElementById('customerPieChart');
+            if (charts.customerPie) charts.customerPie.destroy();
+
+            charts.customerPie = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: sorted.map(([customer]) => customer),
+                    datasets: [{
+                        data: sorted.map(([, revenue]) => revenue),
+                        backgroundColor: [
+                            '#3182ce', '#38a169', '#d69e2e', '#e53e3e', '#805ad5',
+                            '#319795', '#dd6b20', '#9f7aea', '#48bb78', '#f687b3'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#a0aec0', font: { size: 11 } }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    const label = context.label || '';
+                                    const value = formatCurrency(context.raw);
+                                    return `${label}: ${value}`;
+                                }
                             }
                         }
                     }
-                    html += '</table>';
-
-                    html += '</div>';
-                } else {
-                    html += '<div class="section">';
-                    html += '<h2 class="bad">❌ Orders Data config not found!</h2>';
-                    html += '</div>';
                 }
-
-            } catch (error) {
-                html += '<div class="section">';
-                html += `<h2 class="bad">❌ Error: ${error.message}</h2>`;
-                html += '<pre>' + error.stack + '</pre>';
-                html += '</div>';
-            }
-
-            document.getElementById('loading').style.display = 'none';
-            resultsDiv.innerHTML = html;
-            resultsDiv.style.display = 'block';
+            });
         }
 
-        // Run on load
-        window.addEventListener('DOMContentLoaded', debugDashboard);
+        function updateMonthlyTrendChart() {
+            const monthStats = {};
+            ordersData.forEach(row => {
+                const date = row.date;
+                if (!date) return;
+                const month = date.substring(0, 7); // YYYY-MM
+                if (!monthStats[month]) monthStats[month] = { revenue: 0, pl: 0 };
+                monthStats[month].revenue += parseNumber(row.revenue) || 0;
+                monthStats[month].pl += parseNumber(row.profitLoss) || 0;
+            });
+
+            const sorted = Object.entries(monthStats).sort((a, b) => a[0].localeCompare(b[0]));
+
+            const ctx = document.getElementById('monthlyTrendChart');
+            if (charts.monthlyTrend) charts.monthlyTrend.destroy();
+
+            charts.monthlyTrend = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sorted.map(([month]) => month),
+                    datasets: [
+                        {
+                            label: 'Revenue',
+                            data: sorted.map(([, stats]) => stats.revenue),
+                            borderColor: '#3182ce',
+                            backgroundColor: 'rgba(49,130,206,0.1)',
+                            fill: true
+                        },
+                        {
+                            label: 'P/L',
+                            data: sorted.map(([, stats]) => stats.pl),
+                            borderColor: '#38a169',
+                            backgroundColor: 'rgba(56,161,105,0.1)',
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { color: '#a0aec0' }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `${context.dataset.label}: ${formatCurrency(context.raw)}`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: (value) => formatCurrency(value),
+                                color: '#a0aec0'
+                            },
+                            grid: { color: '#4a5568' }
+                        },
+                        x: {
+                            ticks: { color: '#a0aec0' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updatePartsTable() {
+            const partStats = {};
+            ordersData.forEach(row => {
+                const part = row.partNumber;
+                if (!partStats[part]) partStats[part] = { revenue: 0, pl: 0, qty: 0, orders: 0 };
+                partStats[part].revenue += parseNumber(row.revenue) || 0;
+                partStats[part].pl += parseNumber(row.profitLoss) || 0;
+                partStats[part].qty += parseNumber(row.quantity) || 0;
+                partStats[part].orders++;
+            });
+
+            const sorted = Object.entries(partStats).sort((a, b) => b[1].pl - a[1].pl);
+            const tbody = document.getElementById('partsTableBody');
+            
+            tbody.innerHTML = sorted.map(([part, stats]) => {
+                const margin = stats.revenue ? ((stats.pl / stats.revenue) * 100).toFixed(1) : 0;
+                return `<tr>
+                    <td>${part}</td>
+                    <td>${stats.orders}</td>
+                    <td>${formatNumber(stats.qty)}</td>
+                    <td>${formatCurrency(stats.revenue)}</td>
+                    <td class="${stats.pl >= 0 ? 'positive' : 'negative'}">${formatCurrency(stats.pl)}</td>
+                    <td class="${margin >= 0 ? 'positive' : 'negative'}">${margin}%</td>
+                </tr>`;
+            }).join('');
+
+            // Add search functionality
+            document.getElementById('partsSearch').oninput = (e) => {
+                const filter = e.target.value.toLowerCase();
+                Array.from(tbody.rows).forEach(row => {
+                    const text = row.cells[0].textContent.toLowerCase();
+                    row.style.display = text.includes(filter) ? '' : 'none';
+                });
+            };
+        }
+
+        function updateCustomersTable() {
+            const customerStats = {};
+            ordersData.forEach(row => {
+                const customer = row.customer;
+                if (!customerStats[customer]) customerStats[customer] = { revenue: 0, pl: 0, qty: 0, orders: 0 };
+                customerStats[customer].revenue += parseNumber(row.revenue) || 0;
+                customerStats[customer].pl += parseNumber(row.profitLoss) || 0;
+                customerStats[customer].qty += parseNumber(row.quantity) || 0;
+                customerStats[customer].orders++;
+            });
+
+            const sorted = Object.entries(customerStats).sort((a, b) => b[1].pl - a[1].pl);
+            const tbody = document.getElementById('customersTableBody');
+            
+            tbody.innerHTML = sorted.map(([customer, stats]) => {
+                const margin = stats.revenue ? ((stats.pl / stats.revenue) * 100).toFixed(1) : 0;
+                return `<tr>
+                    <td>${customer}</td>
+                    <td>${stats.orders}</td>
+                    <td>${formatNumber(stats.qty)}</td>
+                    <td>${formatCurrency(stats.revenue)}</td>
+                    <td class="${stats.pl >= 0 ? 'positive' : 'negative'}">${formatCurrency(stats.pl)}</td>
+                    <td class="${margin >= 0 ? 'positive' : 'negative'}">${margin}%</td>
+                </tr>`;
+            }).join('');
+
+            // Add search functionality
+            document.getElementById('customersSearch').oninput = (e) => {
+                const filter = e.target.value.toLowerCase();
+                Array.from(tbody.rows).forEach(row => {
+                    const text = row.cells[0].textContent.toLowerCase();
+                    row.style.display = text.includes(filter) ? '' : 'none';
+                });
+            };
+        }
+
+        function updateDatesTable() {
+            const monthStats = {};
+            ordersData.forEach(row => {
+                const date = row.date;
+                if (!date) return;
+                const month = date.substring(0, 7);
+                const status = row.status || 'Unknown';
+                
+                const key = `${month}|${status}`;
+                if (!monthStats[key]) monthStats[key] = { month, status, revenue: 0, pl: 0, qty: 0, orders: 0 };
+                monthStats[key].revenue += parseNumber(row.revenue) || 0;
+                monthStats[key].pl += parseNumber(row.profitLoss) || 0;
+                monthStats[key].qty += parseNumber(row.quantity) || 0;
+                monthStats[key].orders++;
+            });
+
+            const sorted = Object.values(monthStats).sort((a, b) => b.month.localeCompare(a.month));
+            const tbody = document.getElementById('datesTableBody');
+            
+            tbody.innerHTML = sorted.map(stats => {
+                const badgeClass = stats.status === 'Shipped' ? 'shipped' : 'forecast';
+                return `<tr>
+                    <td>${stats.month}</td>
+                    <td><span class="badge ${badgeClass}">${stats.status}</span></td>
+                    <td>${stats.orders}</td>
+                    <td>${formatNumber(stats.qty)}</td>
+                    <td>${formatCurrency(stats.revenue)}</td>
+                    <td class="${stats.pl >= 0 ? 'positive' : 'negative'}">${formatCurrency(stats.pl)}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        function updateBOMTable() {
+            const tbody = document.getElementById('bomTableBody');
+            
+            tbody.innerHTML = bomData.map(item => {
+                return `<tr>
+                    <td>${item.partName || ''}</td>
+                    <td>${item.category || ''}</td>
+                    <td>${item.description || ''}</td>
+                    <td>${formatCurrency(parseNumber(item.cost) || 0)}</td>
+                </tr>`;
+            }).join('');
+
+            // Add search functionality
+            document.getElementById('bomSearch').oninput = (e) => {
+                const filter = e.target.value.toLowerCase();
+                Array.from(tbody.rows).forEach(row => {
+                    const text = Array.from(row.cells).map(c => c.textContent).join(' ').toLowerCase();
+                    row.style.display = text.includes(filter) ? '' : 'none';
+                });
+            };
+        }
+
+        // ===== INITIALIZE =====
+        window.addEventListener('DOMContentLoaded', loadDashboard);
     </script>
 </body>
 </html>
