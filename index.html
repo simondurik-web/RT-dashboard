@@ -670,6 +670,16 @@
         const CONFIG_GID = '912029812';
 
         // ===== UTILITY FUNCTIONS =====
+        function parseNumber(value) {
+            // Parse numbers that might have $ signs, commas, or be empty
+            if (!value || value === '') return 0;
+            if (typeof value === 'number') return value;
+            // Remove $ signs, commas, and spaces
+            const cleaned = String(value).replace(/[$,\s]/g, '');
+            const num = parseFloat(cleaned);
+            return isNaN(num) ? 0 : num;
+        }
+
         function formatCurrency(value) {
             if (value == null || isNaN(value)) return '$0';
             return new Intl.NumberFormat('en-US', {
@@ -831,9 +841,9 @@
         }
 
         function updateStats() {
-            const totalRevenue = ordersData.reduce((sum, row) => sum + (parseFloat(row.revenue) || 0), 0);
-            const totalPL = ordersData.reduce((sum, row) => sum + (parseFloat(row.profitLoss) || 0), 0);
-            const totalQty = ordersData.reduce((sum, row) => sum + (parseFloat(row.quantity) || 0), 0);
+            const totalRevenue = ordersData.reduce((sum, row) => sum + (parseNumber(row.revenue) || 0), 0);
+            const totalPL = ordersData.reduce((sum, row) => sum + (parseNumber(row.profitLoss) || 0), 0);
+            const totalQty = ordersData.reduce((sum, row) => sum + (parseNumber(row.quantity) || 0), 0);
             const totalOrders = ordersData.length;
 
             document.getElementById('statRevenue').textContent = formatCurrency(totalRevenue);
@@ -849,9 +859,9 @@
             ordersData.forEach(row => {
                 const part = row.partNumber;
                 if (!partStats[part]) partStats[part] = { revenue: 0, pl: 0, qty: 0, orders: 0 };
-                partStats[part].revenue += parseFloat(row.revenue) || 0;
-                partStats[part].pl += parseFloat(row.profitLoss) || 0;
-                partStats[part].qty += parseFloat(row.quantity) || 0;
+                partStats[part].revenue += parseNumber(row.revenue) || 0;
+                partStats[part].pl += parseNumber(row.profitLoss) || 0;
+                partStats[part].qty += parseNumber(row.quantity) || 0;
                 partStats[part].orders++;
             });
 
@@ -906,7 +916,7 @@
             ordersData.forEach(row => {
                 const customer = row.customer;
                 if (!customerStats[customer]) customerStats[customer] = 0;
-                customerStats[customer] += parseFloat(row.revenue) || 0;
+                customerStats[customer] += parseNumber(row.revenue) || 0;
             });
 
             const sorted = Object.entries(customerStats)
@@ -957,8 +967,8 @@
                 if (!date) return;
                 const month = date.substring(0, 7); // YYYY-MM
                 if (!monthStats[month]) monthStats[month] = { revenue: 0, pl: 0 };
-                monthStats[month].revenue += parseFloat(row.revenue) || 0;
-                monthStats[month].pl += parseFloat(row.profitLoss) || 0;
+                monthStats[month].revenue += parseNumber(row.revenue) || 0;
+                monthStats[month].pl += parseNumber(row.profitLoss) || 0;
             });
 
             const sorted = Object.entries(monthStats).sort((a, b) => a[0].localeCompare(b[0]));
@@ -1023,9 +1033,9 @@
             ordersData.forEach(row => {
                 const part = row.partNumber;
                 if (!partStats[part]) partStats[part] = { revenue: 0, pl: 0, qty: 0, orders: 0 };
-                partStats[part].revenue += parseFloat(row.revenue) || 0;
-                partStats[part].pl += parseFloat(row.profitLoss) || 0;
-                partStats[part].qty += parseFloat(row.quantity) || 0;
+                partStats[part].revenue += parseNumber(row.revenue) || 0;
+                partStats[part].pl += parseNumber(row.profitLoss) || 0;
+                partStats[part].qty += parseNumber(row.quantity) || 0;
                 partStats[part].orders++;
             });
 
@@ -1059,9 +1069,9 @@
             ordersData.forEach(row => {
                 const customer = row.customer;
                 if (!customerStats[customer]) customerStats[customer] = { revenue: 0, pl: 0, qty: 0, orders: 0 };
-                customerStats[customer].revenue += parseFloat(row.revenue) || 0;
-                customerStats[customer].pl += parseFloat(row.profitLoss) || 0;
-                customerStats[customer].qty += parseFloat(row.quantity) || 0;
+                customerStats[customer].revenue += parseNumber(row.revenue) || 0;
+                customerStats[customer].pl += parseNumber(row.profitLoss) || 0;
+                customerStats[customer].qty += parseNumber(row.quantity) || 0;
                 customerStats[customer].orders++;
             });
 
@@ -1100,9 +1110,9 @@
                 
                 const key = `${month}|${status}`;
                 if (!monthStats[key]) monthStats[key] = { month, status, revenue: 0, pl: 0, qty: 0, orders: 0 };
-                monthStats[key].revenue += parseFloat(row.revenue) || 0;
-                monthStats[key].pl += parseFloat(row.profitLoss) || 0;
-                monthStats[key].qty += parseFloat(row.quantity) || 0;
+                monthStats[key].revenue += parseNumber(row.revenue) || 0;
+                monthStats[key].pl += parseNumber(row.profitLoss) || 0;
+                monthStats[key].qty += parseNumber(row.quantity) || 0;
                 monthStats[key].orders++;
             });
 
@@ -1130,7 +1140,7 @@
                     <td>${item.partName || ''}</td>
                     <td>${item.category || ''}</td>
                     <td>${item.description || ''}</td>
-                    <td>${formatCurrency(parseFloat(item.cost) || 0)}</td>
+                    <td>${formatCurrency(parseNumber(item.cost) || 0)}</td>
                 </tr>`;
             }).join('');
 
