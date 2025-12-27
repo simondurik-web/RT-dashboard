@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Roll Tech P&L Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     <style>
@@ -29,40 +29,11 @@
         /* ===== BASE STYLES ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, var(--bg-dark) 0%, #0d1421 100%);
             color: var(--text-primary);
             line-height: 1.6;
             min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* ===== MOBILE HEADER ===== */
-        .mobile-header {
-            display: none;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 20px;
-            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        .mobile-header h1 { font-size: 18px; font-weight: 700; }
-        .mobile-header .subtitle { font-size: 11px; color: var(--text-secondary); display: block; }
-        .menu-toggle {
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: white;
-            font-size: 24px;
-            width: 44px;
-            height: 44px;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         /* ===== SIDEBAR ===== */
@@ -75,21 +46,9 @@
             background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
             padding: 20px;
             overflow-y: auto;
-            z-index: 2000;
+            z-index: 1000;
             box-shadow: 4px 0 15px rgba(0,0,0,0.3);
-            transition: left 0.3s ease;
         }
-        .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1999;
-            display: none;
-        }
-        .sidebar-overlay.active { display: block; }
         .logo { text-align: center; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 30px; }
         .logo h1 {
             font-size: 24px;
@@ -141,7 +100,6 @@
         .stat-card .value { font-size: 28px; font-weight: 700; }
         .stat-card .value.positive { color: var(--success); }
         .stat-card .value.negative { color: var(--danger); }
-        .stat-card .sub { font-size: 12px; color: var(--text-secondary); margin-top: 8px; }
 
         /* ===== CHARTS ===== */
         .chart-container { background: var(--bg-card); border-radius: 16px; padding: 24px; border: 1px solid var(--border); margin-bottom: 30px; }
@@ -187,10 +145,10 @@
         .data-table .positive { color: var(--success); font-weight: 600; }
         .data-table .negative { color: var(--danger); font-weight: 600; }
         .data-table .clickable-cell { color: var(--accent); cursor: pointer; text-decoration: underline; }
-        .scrollable-table { max-height: 500px; overflow-y: auto; }
+        .scrollable-table { max-height: 500px; overflow-y: auto; overflow-x: auto; }
 
         /* ===== BADGES ===== */
-        .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; white-space: nowrap; }
         .badge.shipped { background: var(--success); color: white; }
         .badge.forecast { background: var(--warning); color: #1a202c; }
         .badge.target-achieved { background: var(--success); color: white; }
@@ -252,49 +210,59 @@
         .cost-breakdown { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
         .cost-item { display: flex; justify-content: space-between; padding: 10px 14px; background: var(--bg-dark); border-radius: 8px; font-size: 13px; }
         .cost-item .label { color: var(--text-secondary); }
-        .highlight-box {
-            background: linear-gradient(135deg, var(--accent) 0%, #4299e1 100%);
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-around;
-            text-align: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        .highlight-box .item { flex: 1; min-width: 100px; }
-        .highlight-box .value { font-size: 24px; font-weight: 700; }
-        .highlight-box .label { font-size: 12px; opacity: 0.8; }
 
-        /* ===== LOADING & ERROR STATES ===== */
+        /* ===== GRID LAYOUTS ===== */
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
+        @media (max-width: 1200px) { .grid-2 { grid-template-columns: 1fr; } }
+
+        /* ===== LOADING STATE ===== */
         .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; }
         .spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .error-state { display: none; text-align: center; padding: 60px 20px; }
         .error-state h3 { color: var(--danger); margin-bottom: 10px; }
 
-        /* ===== GRID LAYOUTS ===== */
-        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
-        @media (max-width: 1200px) { .grid-2 { grid-template-columns: 1fr; } }
-
         /* ===== MOBILE RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .sidebar { width: 220px; }
+            .main-content { margin-left: 220px; padding: 20px; }
+        }
         @media (max-width: 768px) {
-            .mobile-header { display: flex; }
-            .sidebar { left: -100%; }
+            .sidebar { 
+                position: fixed;
+                left: -280px;
+                transition: left 0.3s ease;
+                z-index: 2000;
+            }
             .sidebar.open { left: 0; }
             .main-content { margin-left: 0; padding: 15px; }
-            .page-header h2 { font-size: 24px; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            .stat-card { padding: 16px; }
-            .stat-card .value { font-size: 22px; }
-            .chart-wrapper { height: 280px; }
-            .scrollable-table { overflow-x: auto; }
-            .data-table { min-width: 600px; }
+            .mobile-header { display: flex !important; }
+            .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1999; }
+            .sidebar-overlay.active { display: block; }
             .bom-grid { grid-template-columns: 1fr; }
-            .summary-row { gap: 10px; }
-            .summary-item { min-width: 100px; padding: 12px 15px; }
-            .summary-item .value { font-size: 16px; }
+        }
+
+        .mobile-header {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .mobile-header h1 { font-size: 18px; }
+        .mobile-header .subtitle { font-size: 11px; color: var(--text-secondary); }
+        .menu-toggle {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            font-size: 24px;
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -308,7 +276,7 @@
         <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
     </div>
 
-    <!-- Sidebar Overlay -->
+    <!-- Sidebar Overlay (Mobile) -->
     <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
     <!-- Sidebar -->
@@ -318,14 +286,14 @@
             <span>P&L Analytics Dashboard</span>
         </div>
         <div class="nav-section">
-            <div class="nav-section-title">Dashboards</div>
-            <div class="nav-item active" data-page="overview" onclick="navigateTo('overview')">📊 Overview</div>
-            <div class="nav-item" data-page="parts" onclick="navigateTo('parts')">🔧 Parts Analysis</div>
-            <div class="nav-item" data-page="customers" onclick="navigateTo('customers')">👥 Customer Analysis</div>
-            <div class="nav-item" data-page="dates" onclick="navigateTo('dates')">📅 Date Analysis</div>
+            <div class="nav-section-title">Reports</div>
+            <div class="nav-item active" data-page="overview" onclick="navigateTo('overview')">📊 Dashboard Overview</div>
+            <div class="nav-item" data-page="parts" onclick="navigateTo('parts')">🔧 P/L by Part Number</div>
+            <div class="nav-item" data-page="customers" onclick="navigateTo('customers')">👥 P/L by Customer</div>
+            <div class="nav-item" data-page="dates" onclick="navigateTo('dates')">📅 P/L by Date</div>
         </div>
         <div class="nav-section">
-            <div class="nav-section-title">Tools</div>
+            <div class="nav-section-title">Bill of Materials</div>
             <div class="nav-item" data-page="bom" onclick="navigateTo('bom')">📋 BOM Explorer</div>
         </div>
         <div class="nav-section" style="margin-top:auto; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1);">
@@ -393,12 +361,12 @@
         <!-- Parts Analysis Page -->
         <div id="parts" class="page">
             <div class="page-header">
-                <h2>Parts Analysis</h2>
+                <h2>P/L by Part Number</h2>
                 <p>Detailed P&L breakdown by part number</p>
             </div>
             <div class="chart-container">
                 <div class="chart-header">
-                    <h3>All Parts P/L</h3>
+                    <h3>All Parts</h3>
                     <input type="text" class="search-box" id="partsSearch" placeholder="Search parts...">
                 </div>
                 <div class="scrollable-table">
@@ -422,14 +390,8 @@
         <!-- Customer Analysis Page -->
         <div id="customers" class="page">
             <div class="page-header">
-                <h2>Customer Analysis</h2>
-                <p>P&L breakdown by customer</p>
-            </div>
-            <div class="chart-container">
-                <div class="chart-header">
-                    <h3>Customer P/L Breakdown</h3>
-                </div>
-                <div class="chart-wrapper large"><canvas id="customerBarChart"></canvas></div>
+                <h2>P/L by Customer</h2>
+                <p>Click on a customer to see product breakdown</p>
             </div>
             <div class="chart-container">
                 <div class="chart-header">
@@ -441,10 +403,9 @@
                         <thead>
                             <tr>
                                 <th>Customer</th>
-                                <th>Orders</th>
                                 <th>Quantity</th>
-                                <th>Revenue</th>
                                 <th>P/L</th>
+                                <th>Revenue</th>
                                 <th>Margin</th>
                             </tr>
                         </thead>
@@ -452,29 +413,72 @@
                     </table>
                 </div>
             </div>
-            <!-- Customer Product Drilldown -->
+
+            <!-- Level 2: Product Breakdown (by Part Number) -->
             <div id="customerProductBreakdown" class="drilldown-section">
                 <div class="drilldown-header">
                     <div>
-                        <h3 id="selectedCustomerTitle">Customer Details</h3>
+                        <h3>🏭 Product Breakdown</h3>
+                        <div class="subtitle" id="selectedCustomerTitle">Customer: Loading...</div>
                     </div>
                     <button class="close-btn" onclick="closeCustomerProductDrilldown()">✕ Close</button>
                 </div>
                 <div class="summary-row" id="customerProductSummary"></div>
                 <div class="scrollable-table">
-                    <table class="data-table">
+                    <table class="data-table" id="customerProductTable">
                         <thead>
                             <tr>
-                                <th>Part</th>
+                                <th>Part Number</th>
                                 <th>Qty</th>
                                 <th>Unit Price</th>
-                                <th>Status</th>
-                                <th>Revenue</th>
+                                <th>Contribution Level</th>
+                                <th>Variable Cost</th>
+                                <th>Total Cost</th>
+                                <th>Margin %</th>
                                 <th>P/L</th>
-                                <th>Margin</th>
+                                <th>Revenue</th>
                             </tr>
                         </thead>
                         <tbody id="customerProductTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Level 3: Order Details (individual orders for a part) -->
+            <div id="customerPartOrderDetails" class="drilldown-section">
+                <div class="drilldown-header">
+                    <div>
+                        <div class="breadcrumb">
+                            Customer: <span id="breadcrumbCustomer2"></span>
+                            <span class="separator">›</span>
+                            Part: <span id="breadcrumbPart"></span>
+                        </div>
+                        <h3 id="partOrderDetailsTitle">Order Details</h3>
+                    </div>
+                    <div>
+                        <button class="back-btn" onclick="backToProductBreakdown()">← Back to Products</button>
+                        <button class="close-btn" onclick="closePartOrderDrilldown()">✕ Close All</button>
+                    </div>
+                </div>
+                <div class="summary-row" id="partOrderSummary"></div>
+                <div class="scrollable-table">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>PO #</th>
+                                <th>Status</th>
+                                <th>Qty</th>
+                                <th>Unit Price</th>
+                                <th>Contribution Level</th>
+                                <th>Variable Cost</th>
+                                <th>Total Cost</th>
+                                <th>Profit/Part</th>
+                                <th>P/L</th>
+                                <th>Revenue</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="partOrderTableBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -483,7 +487,7 @@
         <!-- Date Analysis Page -->
         <div id="dates" class="page">
             <div class="page-header">
-                <h2>Date Analysis</h2>
+                <h2>P/L by Date</h2>
                 <p>Click on a month to see customer breakdown</p>
             </div>
             <div class="chart-container">
@@ -620,12 +624,13 @@
         let charts = {};
         let selectedMonth = null;
         let selectedCustomer = null;
+        let selectedPart = null;
         let currentBomTab = 'final';
 
         // ===== UTILITY FUNCTIONS =====
         function formatCurrency(value) {
             if (value === null || value === undefined || isNaN(value)) return '$0';
-            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
         }
 
         function formatNumber(value) {
@@ -636,9 +641,7 @@
         function parseNumber(value) {
             if (!value || value === '') return 0;
             if (typeof value === 'number') return value;
-            // Remove $, commas, spaces, and handle parentheses for negatives
             let cleaned = String(value).replace(/[$,\s]/g, '');
-            // Handle accounting format (123) = -123
             if (cleaned.startsWith('(') && cleaned.endsWith(')')) {
                 cleaned = '-' + cleaned.slice(1, -1);
             }
@@ -656,15 +659,27 @@
             return `<span class="badge">${level}</span>`;
         }
 
+        function parseMonth(date) {
+            if (!date) return null;
+            if (date.includes('/')) {
+                const parts = date.split('/');
+                if (parts.length >= 3) {
+                    const m = parts[0].padStart(2, '0');
+                    const y = parts[2].length === 2 ? '20' + parts[2] : parts[2];
+                    return `${y}-${m}`;
+                }
+            } else if (date.includes('-')) {
+                return date.substring(0, 7);
+            }
+            return null;
+        }
+
         // ===== CSV PARSING =====
         function parseCSV(text) {
             const lines = text.split('\n');
             if (lines.length < 2) return [];
-            
-            // Parse header row
             const headers = parseCSVLine(lines[0]);
             const data = [];
-            
             for (let i = 1; i < lines.length; i++) {
                 if (!lines[i].trim()) continue;
                 const values = parseCSVLine(lines[i]);
@@ -681,7 +696,6 @@
             const result = [];
             let current = '';
             let inQuotes = false;
-            
             for (let i = 0; i < line.length; i++) {
                 const char = line[i];
                 if (char === '"') {
@@ -707,7 +721,6 @@
 
         function parseColumnMappings(mappingText) {
             if (!mappingText) return {};
-            // Split by semicolon OR newline
             const lines = mappingText.split(/[;\n]/);
             const mappings = {};
             lines.forEach(line => {
@@ -724,8 +737,11 @@
             for (const [fieldName, columnName] of Object.entries(mapping)) {
                 mapped[fieldName] = row[columnName] || '';
             }
-            // Also preserve the original Category column for filtering
+            // Preserve important raw columns
             if (row['Category']) mapped.category = row['Category'];
+            if (row['Variable Cost']) mapped.variableCost = row['Variable Cost'];
+            if (row['Total Cost']) mapped.totalCost = row['Total Cost'];
+            if (row['Contribution Level']) mapped.contributionLevel = row['Contribution Level'];
             return mapped;
         }
 
@@ -744,10 +760,7 @@
             });
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.getElementById(pageName).classList.add('active');
-            
-            // Close any open drilldowns
             document.querySelectorAll('.drilldown-section').forEach(d => d.classList.remove('active'));
-            
             if (window.innerWidth < 768) toggleSidebar();
         }
 
@@ -756,9 +769,7 @@
             try {
                 console.log('Loading Dashboard Config...');
                 const configData = await fetchSheetData(CONFIG_GID);
-                console.log('Config data rows:', configData.length);
 
-                // Parse config
                 config = {};
                 configData.forEach(row => {
                     if (row['Dashboard Name'] === 'P&L Dashboard' && row['GID Number']) {
@@ -766,48 +777,35 @@
                         const gid = row['GID Number'];
                         const mappings = parseColumnMappings(row['Column Mappings']);
                         config[tabName] = { gid, mappings };
-                        console.log(`Config for ${tabName}:`, { gid, mappingCount: Object.keys(mappings).length });
                     }
                 });
 
-                // Load Orders Data
                 if (config['Orders Data']) {
-                    console.log('Loading Orders Data from GID:', config['Orders Data'].gid);
+                    console.log('Loading Orders Data...');
                     const rawData = await fetchSheetData(config['Orders Data'].gid);
-                    console.log('Raw data rows:', rawData.length);
                     
-                    // Apply mapping AND filter for Roll tech only
                     ordersData = rawData
                         .map(row => applyMapping(row, config['Orders Data'].mappings))
                         .filter(row => {
                             const category = row.category || '';
                             return category.toLowerCase().includes('roll tech');
                         })
-                        .filter(row => row.partNumber); // Also filter out rows without part numbers
+                        .filter(row => row.partNumber);
                     
                     console.log('Filtered Roll Tech orders:', ordersData.length);
-                    
-                    // Debug: Log first row to verify mapping
-                    if (ordersData.length > 0) {
-                        console.log('Sample row:', ordersData[0]);
-                    }
                 }
 
-                // Load BOM Data
                 await loadBOMData();
 
-                // Update data info
                 document.getElementById('dataInfo').innerHTML = `
                     <strong>Data Loaded</strong><br>
                     ${ordersData.length} Roll Tech orders<br>
                     Last refreshed: ${new Date().toLocaleTimeString()}
                 `;
 
-                // Hide loading, show dashboard
                 document.getElementById('loadingState').style.display = 'none';
                 document.getElementById('overview').classList.add('active');
 
-                // Initialize dashboard
                 initializeDashboard();
 
             } catch (error) {
@@ -820,25 +818,17 @@
 
         async function loadBOMData() {
             try {
-                // Load Individual Items
                 if (config['BOM individual items Reference data']) {
                     const rawBOM = await fetchSheetData(config['BOM individual items Reference data'].gid);
                     bomIndividualData = rawBOM.map(row => applyMapping(row, config['BOM individual items Reference data'].mappings));
-                    console.log('Loaded', bomIndividualData.length, 'individual BOM items');
                 }
-                
-                // Load Sub Assembly
                 if (config['BOM Sub assembly Reference data']) {
                     const rawBOM = await fetchSheetData(config['BOM Sub assembly Reference data'].gid);
                     bomSubData = rawBOM.map(row => applyMapping(row, config['BOM Sub assembly Reference data'].mappings));
-                    console.log('Loaded', bomSubData.length, 'sub assembly items');
                 }
-                
-                // Load Final Assembly
                 if (config['BOM Final assembly Reference data']) {
                     const rawBOM = await fetchSheetData(config['BOM Final assembly Reference data'].gid);
                     bomFinalData = rawBOM.map(row => applyMapping(row, config['BOM Final assembly Reference data'].mappings));
-                    console.log('Loaded', bomFinalData.length, 'final assembly items');
                 }
             } catch (e) {
                 console.warn('BOM data load error:', e);
@@ -853,7 +843,6 @@
             updateMonthlyTrendChart();
             updatePartsTable();
             updateCustomersTable();
-            updateCustomerBarChart();
             updateDateStackedChart();
             updateDatesTable();
             initBomExplorer();
@@ -877,16 +866,12 @@
             ordersData.forEach(row => {
                 const part = row.partNumber;
                 if (!part) return;
-                if (!partStats[part]) partStats[part] = { revenue: 0, pl: 0, qty: 0, orders: 0 };
+                if (!partStats[part]) partStats[part] = { revenue: 0, pl: 0 };
                 partStats[part].revenue += parseNumber(row.revenue);
                 partStats[part].pl += parseNumber(row.profitLoss);
-                partStats[part].qty += parseNumber(row.quantity);
-                partStats[part].orders++;
             });
 
-            const sorted = Object.entries(partStats)
-                .sort((a, b) => b[1].pl - a[1].pl)
-                .slice(0, 10);
+            const sorted = Object.entries(partStats).sort((a, b) => b[1].pl - a[1].pl).slice(0, 10);
 
             const ctx = document.getElementById('topPartsChart');
             if (charts.topParts) charts.topParts.destroy();
@@ -896,7 +881,6 @@
                 data: {
                     labels: sorted.map(([part]) => part),
                     datasets: [{
-                        label: 'P/L',
                         data: sorted.map(([, stats]) => stats.pl),
                         backgroundColor: sorted.map(([, stats]) => stats.pl >= 0 ? '#38a169' : '#e53e3e'),
                         borderRadius: 4
@@ -905,10 +889,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { callbacks: { label: (ctx) => formatCurrency(ctx.raw) } }
-                    },
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => formatCurrency(ctx.raw) } } },
                     scales: {
                         y: { ticks: { callback: v => formatCurrency(v), color: '#a0aec0' }, grid: { color: '#4a5568' } },
                         x: { ticks: { color: '#a0aec0', maxRotation: 45 }, grid: { display: false } }
@@ -926,9 +907,7 @@
                 customerStats[customer].pl += parseNumber(row.profitLoss);
             });
 
-            const sorted = Object.entries(customerStats)
-                .sort((a, b) => b[1].revenue - a[1].revenue)
-                .slice(0, 10);
+            const sorted = Object.entries(customerStats).sort((a, b) => b[1].revenue - a[1].revenue).slice(0, 10);
 
             const ctx = document.getElementById('customerPieChart');
             if (charts.customerPie) charts.customerPie.destroy();
@@ -946,8 +925,8 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'bottom', labels: { color: '#a0aec0', font: { size: 11 } } },
-                        tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${formatCurrency(ctx.raw)}` } }
+                        legend: { position: 'right', labels: { color: '#a0aec0', padding: 15 } },
+                        tooltip: { callbacks: { label: ctx => `${ctx.label}: ${formatCurrency(ctx.raw)}` } }
                     }
                 }
             });
@@ -956,28 +935,8 @@
         function updateMonthlyTrendChart() {
             const monthStats = {};
             ordersData.forEach(row => {
-                const date = row.date || row.shippedDate;
-                if (!date) return;
-                
-                // Handle different date formats
-                let month;
-                if (date.includes('/')) {
-                    // M/D/YYYY format
-                    const parts = date.split('/');
-                    if (parts.length >= 3) {
-                        const m = parts[0].padStart(2, '0');
-                        const y = parts[2].length === 2 ? '20' + parts[2] : parts[2];
-                        month = `${y}-${m}`;
-                    }
-                } else if (date.includes('-')) {
-                    // YYYY-MM-DD format
-                    month = date.substring(0, 7);
-                } else {
-                    return;
-                }
-                
-                if (!month || month.length < 7) return;
-                
+                const month = parseMonth(row.date || row.shippedDate);
+                if (!month) return;
                 if (!monthStats[month]) monthStats[month] = { revenue: 0, pl: 0 };
                 monthStats[month].revenue += parseNumber(row.revenue);
                 monthStats[month].pl += parseNumber(row.profitLoss);
@@ -993,31 +952,14 @@
                 data: {
                     labels: sorted.map(([month]) => month),
                     datasets: [
-                        {
-                            label: 'Revenue',
-                            data: sorted.map(([, stats]) => stats.revenue),
-                            borderColor: '#3182ce',
-                            backgroundColor: 'rgba(49,130,206,0.1)',
-                            fill: true,
-                            tension: 0.4
-                        },
-                        {
-                            label: 'P/L',
-                            data: sorted.map(([, stats]) => stats.pl),
-                            borderColor: '#38a169',
-                            backgroundColor: 'rgba(56,161,105,0.1)',
-                            fill: true,
-                            tension: 0.4
-                        }
+                        { label: 'Revenue', data: sorted.map(([, stats]) => stats.revenue), borderColor: '#3182ce', backgroundColor: 'rgba(49,130,206,0.1)', fill: true, tension: 0.4 },
+                        { label: 'P/L', data: sorted.map(([, stats]) => stats.pl), borderColor: '#38a169', backgroundColor: 'rgba(56,161,105,0.1)', fill: true, tension: 0.4 }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'top', labels: { color: '#a0aec0' } },
-                        tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${formatCurrency(ctx.raw)}` } }
-                    },
+                    plugins: { legend: { labels: { color: '#a0aec0' } }, tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${formatCurrency(ctx.raw)}` } } },
                     scales: {
                         y: { ticks: { callback: v => formatCurrency(v), color: '#a0aec0' }, grid: { color: '#4a5568' } },
                         x: { ticks: { color: '#a0aec0' }, grid: { display: false } }
@@ -1026,68 +968,12 @@
             });
         }
 
-        function updateCustomerBarChart() {
-            const customerStats = {};
-            ordersData.forEach(row => {
-                const customer = row.customer || 'Unknown';
-                if (!customerStats[customer]) customerStats[customer] = { revenue: 0, pl: 0, qty: 0, orders: 0 };
-                customerStats[customer].revenue += parseNumber(row.revenue);
-                customerStats[customer].pl += parseNumber(row.profitLoss);
-                customerStats[customer].qty += parseNumber(row.quantity);
-                customerStats[customer].orders++;
-            });
-
-            const sorted = Object.entries(customerStats).sort((a, b) => a[1].pl - b[1].pl);
-
-            const ctx = document.getElementById('customerBarChart');
-            if (charts.customerBar) charts.customerBar.destroy();
-
-            charts.customerBar = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: sorted.map(([name]) => name.substring(0, 25)),
-                    datasets: [{
-                        data: sorted.map(([, stats]) => stats.pl),
-                        backgroundColor: sorted.map(([, stats]) => stats.pl >= 0 ? 'rgba(56,161,105,0.8)' : 'rgba(229,62,62,0.8)'),
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    indexAxis: 'y',
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { callbacks: { label: ctx => formatCurrency(ctx.raw) } }
-                    },
-                    scales: {
-                        x: { ticks: { callback: v => formatCurrency(v), color: '#a0aec0' }, grid: { color: '#4a5568' } },
-                        y: { ticks: { color: '#a0aec0', font: { size: 10 } }, grid: { display: false } }
-                    }
-                }
-            });
-        }
-
         function updateDateStackedChart() {
             const monthlyData = {};
             ordersData.forEach(row => {
-                const date = row.date || row.shippedDate;
+                const month = parseMonth(row.date || row.shippedDate);
                 const status = row.status || 'Unknown';
-                if (!date) return;
-                
-                let month;
-                if (date.includes('/')) {
-                    const parts = date.split('/');
-                    if (parts.length >= 3) {
-                        const m = parts[0].padStart(2, '0');
-                        const y = parts[2].length === 2 ? '20' + parts[2] : parts[2];
-                        month = `${y}-${m}`;
-                    }
-                } else if (date.includes('-')) {
-                    month = date.substring(0, 7);
-                }
-                
-                if (!month || month.length < 7) return;
+                if (!month) return;
                 
                 if (!monthlyData[month]) monthlyData[month] = { shippedProfit: 0, shippedLoss: 0, forecastProfit: 0, forecastLoss: 0 };
                 
@@ -1122,16 +1008,8 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    onClick: (e, elements) => {
-                        if (elements.length > 0) {
-                            const index = elements[0].index;
-                            showMonthlyBreakdown(months[index]);
-                        }
-                    },
-                    plugins: {
-                        legend: { labels: { color: '#a0aec0' } },
-                        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${formatCurrency(ctx.raw)}` } }
-                    },
+                    onClick: (e, elements) => { if (elements.length > 0) showMonthlyBreakdown(months[elements[0].index]); },
+                    plugins: { legend: { labels: { color: '#a0aec0' } }, tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${formatCurrency(ctx.raw)}` } } },
                     scales: {
                         x: { stacked: true, ticks: { color: '#a0aec0' }, grid: { display: false } },
                         y: { stacked: true, ticks: { callback: v => formatCurrency(v), color: '#a0aec0' }, grid: { color: '#4a5568' } }
@@ -1156,8 +1034,8 @@
             const tbody = document.getElementById('partsTableBody');
             
             tbody.innerHTML = sorted.map(([part, stats]) => {
-                const margin = stats.revenue ? ((stats.pl / stats.revenue) * 100).toFixed(1) : 0;
-                return `<tr class="clickable" data-part="${part}">
+                const margin = stats.revenue ? ((stats.pl / stats.revenue) * 100).toFixed(2) : 0;
+                return `<tr>
                     <td>${part}</td>
                     <td>${stats.orders}</td>
                     <td>${formatNumber(stats.qty)}</td>
@@ -1167,43 +1045,39 @@
                 </tr>`;
             }).join('');
 
-            // Search functionality
             document.getElementById('partsSearch').oninput = (e) => {
                 const filter = e.target.value.toLowerCase();
                 Array.from(tbody.rows).forEach(row => {
-                    const text = row.cells[0].textContent.toLowerCase();
-                    row.style.display = text.includes(filter) ? '' : 'none';
+                    row.style.display = row.cells[0].textContent.toLowerCase().includes(filter) ? '' : 'none';
                 });
             };
         }
 
+        // ===== CUSTOMER ANALYSIS =====
         function updateCustomersTable() {
             const customerStats = {};
             ordersData.forEach(row => {
                 const customer = row.customer || 'Unknown';
-                if (!customerStats[customer]) customerStats[customer] = { revenue: 0, pl: 0, qty: 0, orders: 0 };
+                if (!customerStats[customer]) customerStats[customer] = { revenue: 0, pl: 0, qty: 0 };
                 customerStats[customer].revenue += parseNumber(row.revenue);
                 customerStats[customer].pl += parseNumber(row.profitLoss);
                 customerStats[customer].qty += parseNumber(row.quantity);
-                customerStats[customer].orders++;
             });
 
             const sorted = Object.entries(customerStats).sort((a, b) => b[1].pl - a[1].pl);
             const tbody = document.getElementById('customersTableBody');
             
             tbody.innerHTML = sorted.map(([customer, stats]) => {
-                const margin = stats.revenue ? ((stats.pl / stats.revenue) * 100).toFixed(1) : 0;
+                const margin = stats.revenue ? ((stats.pl / stats.revenue) * 100).toFixed(2) : 0;
                 return `<tr class="clickable" data-customer="${customer}">
                     <td class="clickable-cell">${customer}</td>
-                    <td>${stats.orders}</td>
                     <td>${formatNumber(stats.qty)}</td>
-                    <td>${formatCurrency(stats.revenue)}</td>
                     <td class="${stats.pl >= 0 ? 'positive' : 'negative'}">${formatCurrency(stats.pl)}</td>
+                    <td>${formatCurrency(stats.revenue)}</td>
                     <td class="${margin >= 0 ? 'positive' : 'negative'}">${margin}%</td>
                 </tr>`;
             }).join('');
 
-            // Click handler for customer drilldown
             tbody.querySelectorAll('tr.clickable').forEach(row => {
                 row.addEventListener('click', () => {
                     tbody.querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
@@ -1212,76 +1086,160 @@
                 });
             });
 
-            // Search functionality
             document.getElementById('customersSearch').oninput = (e) => {
                 const filter = e.target.value.toLowerCase();
                 Array.from(tbody.rows).forEach(row => {
-                    const text = row.cells[0].textContent.toLowerCase();
-                    row.style.display = text.includes(filter) ? '' : 'none';
+                    row.style.display = row.cells[0].textContent.toLowerCase().includes(filter) ? '' : 'none';
                 });
             };
         }
 
+        // Level 2: Show products for a customer (consolidated by part number)
         function showCustomerProductBreakdown(customer) {
+            selectedCustomer = customer;
             const customerOrders = ordersData.filter(row => row.customer === customer);
             
+            // Consolidate by part number
+            const partStats = {};
+            customerOrders.forEach(o => {
+                const part = o.partNumber;
+                if (!partStats[part]) {
+                    partStats[part] = {
+                        qty: 0,
+                        revenue: 0,
+                        pl: 0,
+                        orders: [],
+                        // Take first values for display (will be weighted avg later)
+                        unitPrice: parseNumber(o.unitPrice),
+                        variableCost: parseNumber(o.variableCost),
+                        totalCost: parseNumber(o.totalCost),
+                        contributionLevel: o.contributionLevel
+                    };
+                }
+                partStats[part].qty += parseNumber(o.quantity);
+                partStats[part].revenue += parseNumber(o.revenue);
+                partStats[part].pl += parseNumber(o.profitLoss);
+                partStats[part].orders.push(o);
+            });
+            
+            const productCount = Object.keys(partStats).length;
             const totalQty = customerOrders.reduce((sum, o) => sum + parseNumber(o.quantity), 0);
             const totalRevenue = customerOrders.reduce((sum, o) => sum + parseNumber(o.revenue), 0);
             const totalPL = customerOrders.reduce((sum, o) => sum + parseNumber(o.profitLoss), 0);
             
-            document.getElementById('selectedCustomerTitle').textContent = `Customer: ${customer} | ${customerOrders.length} orders`;
+            document.getElementById('selectedCustomerTitle').textContent = `Customer: ${customer} | ${productCount} products`;
             document.getElementById('customerProductSummary').innerHTML = `
-                <div class="summary-item"><div class="label">Orders</div><div class="value">${customerOrders.length}</div></div>
+                <div class="summary-item"><div class="label">Products</div><div class="value">${productCount}</div></div>
                 <div class="summary-item"><div class="label">Total Qty</div><div class="value">${formatNumber(totalQty)}</div></div>
                 <div class="summary-item"><div class="label">Revenue</div><div class="value">${formatCurrency(totalRevenue)}</div></div>
                 <div class="summary-item"><div class="label">P/L</div><div class="value ${totalPL >= 0 ? 'positive' : 'negative'}">${formatCurrency(totalPL)}</div></div>
             `;
             
             const tbody = document.getElementById('customerProductTableBody');
-            tbody.innerHTML = customerOrders.map(o => {
-                const pl = parseNumber(o.profitLoss);
-                const revenue = parseNumber(o.revenue);
-                const margin = revenue ? ((pl / revenue) * 100).toFixed(1) : 0;
-                return `<tr>
-                    <td>${o.partNumber}</td>
-                    <td>${formatNumber(parseNumber(o.quantity))}</td>
-                    <td>${formatCurrency(parseNumber(o.unitPrice))}</td>
-                    <td><span class="badge ${(o.status || '').toLowerCase() === 'shipped' ? 'shipped' : 'forecast'}">${o.status || 'Unknown'}</span></td>
-                    <td>${formatCurrency(revenue)}</td>
-                    <td class="${pl >= 0 ? 'positive' : 'negative'}">${formatCurrency(pl)}</td>
+            const sortedParts = Object.entries(partStats).sort((a, b) => a[1].pl - b[1].pl);
+            
+            tbody.innerHTML = sortedParts.map(([part, stats]) => {
+                const margin = stats.revenue ? ((stats.pl / stats.revenue) * 100).toFixed(2) : 0;
+                return `<tr class="clickable" data-part="${part}">
+                    <td class="clickable-cell">${part}</td>
+                    <td>${formatNumber(stats.qty)}</td>
+                    <td>${formatCurrency(stats.unitPrice)}</td>
+                    <td>${getContributionBadge(stats.contributionLevel)}</td>
+                    <td>${formatCurrency(stats.variableCost)}</td>
+                    <td>${formatCurrency(stats.totalCost)}</td>
                     <td class="${margin >= 0 ? 'positive' : 'negative'}">${margin}%</td>
+                    <td class="${stats.pl >= 0 ? 'positive' : 'negative'}">${formatCurrency(stats.pl)}</td>
+                    <td>${formatCurrency(stats.revenue)}</td>
                 </tr>`;
             }).join('');
             
+            // Add click handler for Level 3 drill-down
+            tbody.querySelectorAll('tr.clickable').forEach(row => {
+                row.addEventListener('click', () => {
+                    tbody.querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
+                    row.classList.add('selected');
+                    showPartOrderDetails(row.dataset.part);
+                });
+            });
+            
             document.getElementById('customerProductBreakdown').classList.add('active');
+            document.getElementById('customerPartOrderDetails').classList.remove('active');
             document.getElementById('customerProductBreakdown').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Level 3: Show individual orders for a part (within selected customer)
+        function showPartOrderDetails(part) {
+            selectedPart = part;
+            const orders = ordersData.filter(row => row.customer === selectedCustomer && row.partNumber === part);
+            
+            const totalQty = orders.reduce((sum, o) => sum + parseNumber(o.quantity), 0);
+            const totalRevenue = orders.reduce((sum, o) => sum + parseNumber(o.revenue), 0);
+            const totalPL = orders.reduce((sum, o) => sum + parseNumber(o.profitLoss), 0);
+            
+            document.getElementById('breadcrumbCustomer2').textContent = selectedCustomer;
+            document.getElementById('breadcrumbPart').textContent = part;
+            document.getElementById('partOrderDetailsTitle').textContent = `${orders.length} orders for ${part}`;
+            document.getElementById('partOrderSummary').innerHTML = `
+                <div class="summary-item"><div class="label">Orders</div><div class="value">${orders.length}</div></div>
+                <div class="summary-item"><div class="label">Total Qty</div><div class="value">${formatNumber(totalQty)}</div></div>
+                <div class="summary-item"><div class="label">Revenue</div><div class="value">${formatCurrency(totalRevenue)}</div></div>
+                <div class="summary-item"><div class="label">P/L</div><div class="value ${totalPL >= 0 ? 'positive' : 'negative'}">${formatCurrency(totalPL)}</div></div>
+            `;
+            
+            const tbody = document.getElementById('partOrderTableBody');
+            tbody.innerHTML = orders.map(o => {
+                const pl = parseNumber(o.profitLoss);
+                const profitPerPart = parseNumber(o.profitPerPart);
+                const date = o.shippedDate || o.date || '';
+                return `<tr>
+                    <td>${o.poNumber || '-'}</td>
+                    <td><span class="badge ${(o.status || '').toLowerCase() === 'shipped' ? 'shipped' : 'forecast'}">${o.status || 'Unknown'}</span></td>
+                    <td>${formatNumber(parseNumber(o.quantity))}</td>
+                    <td>${formatCurrency(parseNumber(o.unitPrice))}</td>
+                    <td>${getContributionBadge(o.contributionLevel)}</td>
+                    <td>${formatCurrency(parseNumber(o.variableCost))}</td>
+                    <td>${formatCurrency(parseNumber(o.totalCost))}</td>
+                    <td class="${profitPerPart >= 0 ? 'positive' : 'negative'}">${formatCurrency(profitPerPart)}</td>
+                    <td class="${pl >= 0 ? 'positive' : 'negative'}">${formatCurrency(pl)}</td>
+                    <td>${formatCurrency(parseNumber(o.revenue))}</td>
+                    <td>${date}</td>
+                </tr>`;
+            }).join('');
+            
+            document.getElementById('customerPartOrderDetails').classList.add('active');
+            document.getElementById('customerPartOrderDetails').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function closeCustomerProductDrilldown() {
             document.getElementById('customerProductBreakdown').classList.remove('active');
+            document.getElementById('customerPartOrderDetails').classList.remove('active');
+            selectedCustomer = null;
+            selectedPart = null;
             document.querySelectorAll('#customersTableBody tr').forEach(r => r.classList.remove('selected'));
         }
 
+        function backToProductBreakdown() {
+            document.getElementById('customerPartOrderDetails').classList.remove('active');
+            selectedPart = null;
+            document.querySelectorAll('#customerProductTableBody tr').forEach(r => r.classList.remove('selected'));
+            document.getElementById('customerProductBreakdown').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function closePartOrderDrilldown() {
+            document.getElementById('customerProductBreakdown').classList.remove('active');
+            document.getElementById('customerPartOrderDetails').classList.remove('active');
+            selectedCustomer = null;
+            selectedPart = null;
+            document.querySelectorAll('#customersTableBody tr').forEach(r => r.classList.remove('selected'));
+        }
+
+        // ===== DATE ANALYSIS =====
         function updateDatesTable() {
             const monthStats = {};
             ordersData.forEach(row => {
-                const date = row.date || row.shippedDate;
+                const month = parseMonth(row.date || row.shippedDate);
                 const status = row.status || 'Unknown';
-                if (!date) return;
-                
-                let month;
-                if (date.includes('/')) {
-                    const parts = date.split('/');
-                    if (parts.length >= 3) {
-                        const m = parts[0].padStart(2, '0');
-                        const y = parts[2].length === 2 ? '20' + parts[2] : parts[2];
-                        month = `${y}-${m}`;
-                    }
-                } else if (date.includes('-')) {
-                    month = date.substring(0, 7);
-                }
-                
-                if (!month || month.length < 7) return;
+                if (!month) return;
                 
                 const key = `${month}|${status}`;
                 if (!monthStats[key]) monthStats[key] = { month, status, revenue: 0, pl: 0, qty: 0, orders: 0 };
@@ -1295,10 +1253,9 @@
             const tbody = document.getElementById('datesTableBody');
             
             tbody.innerHTML = sorted.map(stats => {
-                const badgeClass = stats.status.toLowerCase() === 'shipped' ? 'shipped' : 'forecast';
                 return `<tr class="clickable" data-month="${stats.month}">
                     <td>${stats.month}</td>
-                    <td><span class="badge ${badgeClass}">${stats.status}</span></td>
+                    <td><span class="badge ${stats.status.toLowerCase() === 'shipped' ? 'shipped' : 'forecast'}">${stats.status}</span></td>
                     <td>${stats.orders}</td>
                     <td>${formatNumber(stats.qty)}</td>
                     <td>${formatCurrency(stats.revenue)}</td>
@@ -1315,30 +1272,11 @@
             });
         }
 
-        // ===== DATE DRILLDOWN FUNCTIONS =====
         function showMonthlyBreakdown(month) {
             selectedMonth = month;
-            selectedCustomer = null;
             
-            // Get orders for this month
-            const monthOrders = ordersData.filter(row => {
-                const date = row.date || row.shippedDate;
-                if (!date) return false;
-                let m;
-                if (date.includes('/')) {
-                    const parts = date.split('/');
-                    if (parts.length >= 3) {
-                        const mm = parts[0].padStart(2, '0');
-                        const y = parts[2].length === 2 ? '20' + parts[2] : parts[2];
-                        m = `${y}-${mm}`;
-                    }
-                } else if (date.includes('-')) {
-                    m = date.substring(0, 7);
-                }
-                return m === month;
-            });
+            const monthOrders = ordersData.filter(row => parseMonth(row.date || row.shippedDate) === month);
             
-            // Aggregate by customer
             const customerData = {};
             monthOrders.forEach(o => {
                 const customer = o.customer || 'Unknown';
@@ -1390,25 +1328,7 @@
         }
 
         function showCustomerOrderDetails(customer) {
-            selectedCustomer = customer;
-            
-            // Get orders for this month and customer
-            const orders = ordersData.filter(row => {
-                const date = row.date || row.shippedDate;
-                if (!date) return false;
-                let m;
-                if (date.includes('/')) {
-                    const parts = date.split('/');
-                    if (parts.length >= 3) {
-                        const mm = parts[0].padStart(2, '0');
-                        const y = parts[2].length === 2 ? '20' + parts[2] : parts[2];
-                        m = `${y}-${mm}`;
-                    }
-                } else if (date.includes('-')) {
-                    m = date.substring(0, 7);
-                }
-                return m === selectedMonth && row.customer === customer;
-            });
+            const orders = ordersData.filter(row => parseMonth(row.date || row.shippedDate) === selectedMonth && row.customer === customer);
             
             const totalQty = orders.reduce((sum, o) => sum + parseNumber(o.quantity), 0);
             const totalRevenue = orders.reduce((sum, o) => sum + parseNumber(o.revenue), 0);
@@ -1427,14 +1347,13 @@
             const tbody = document.getElementById('customerOrderTableBody');
             tbody.innerHTML = orders.map(o => {
                 const pl = parseNumber(o.profitLoss);
-                const profitPerPart = parseNumber(o.profitPerPart);
                 return `<tr>
                     <td>${o.partNumber}</td>
-                    <td>${o.poNumber || ''}</td>
+                    <td>${o.poNumber || '-'}</td>
                     <td><span class="badge ${(o.status || '').toLowerCase() === 'shipped' ? 'shipped' : 'forecast'}">${o.status || 'Unknown'}</span></td>
                     <td>${formatNumber(parseNumber(o.quantity))}</td>
                     <td>${formatCurrency(parseNumber(o.unitPrice))}</td>
-                    <td class="${profitPerPart >= 0 ? 'positive' : 'negative'}">${formatCurrency(profitPerPart)}</td>
+                    <td class="${parseNumber(o.profitPerPart) >= 0 ? 'positive' : 'negative'}">${formatCurrency(parseNumber(o.profitPerPart))}</td>
                     <td class="${pl >= 0 ? 'positive' : 'negative'}">${formatCurrency(pl)}</td>
                     <td>${formatCurrency(parseNumber(o.revenue))}</td>
                 </tr>`;
@@ -1448,19 +1367,16 @@
             document.getElementById('monthlyCustomerBreakdown').classList.remove('active');
             document.getElementById('customerOrderDetails').classList.remove('active');
             selectedMonth = null;
-            selectedCustomer = null;
             document.querySelectorAll('#datesTableBody tr').forEach(r => r.classList.remove('selected'));
         }
 
         function closeCustomerOrderDrilldown() {
             document.getElementById('customerOrderDetails').classList.remove('active');
-            selectedCustomer = null;
             document.querySelectorAll('#monthlyCustomerTableBody tr').forEach(r => r.classList.remove('selected'));
         }
 
         function backToMonthlyBreakdown() {
             document.getElementById('customerOrderDetails').classList.remove('active');
-            selectedCustomer = null;
             document.querySelectorAll('#monthlyCustomerTableBody tr').forEach(r => r.classList.remove('selected'));
             document.getElementById('monthlyCustomerBreakdown').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
@@ -1473,9 +1389,7 @@
 
         function switchBomTab(tab) {
             currentBomTab = tab;
-            document.querySelectorAll('.tab[data-bomtab]').forEach(t => {
-                t.classList.toggle('active', t.dataset.bomtab === tab);
-            });
+            document.querySelectorAll('.tab[data-bomtab]').forEach(t => t.classList.toggle('active', t.dataset.bomtab === tab));
             renderBomSelector();
             document.getElementById('bomPartName').textContent = 'Select a part';
             document.getElementById('bomCategory').textContent = '';
@@ -1487,7 +1401,7 @@
             let data = currentBomTab === 'final' ? bomFinalData : currentBomTab === 'sub' ? bomSubData : bomIndividualData;
             
             if (!data || data.length === 0) {
-                selector.innerHTML = '<p style="color:var(--text-secondary);">No BOM data available for this tab.</p>';
+                selector.innerHTML = '<p style="color:var(--text-secondary);">No BOM data available.</p>';
                 return;
             }
             
@@ -1505,66 +1419,18 @@
             const part = data[index];
             if (!part) return;
             
-            // Highlight selected item
-            document.querySelectorAll('.bom-item').forEach((item, i) => {
-                item.classList.toggle('selected', i === index);
-            });
+            document.querySelectorAll('.bom-item').forEach((item, i) => item.classList.toggle('selected', i === index));
             
             document.getElementById('bomPartName').textContent = part.partName || 'Unknown';
             document.getElementById('bomCategory').textContent = part.category || '';
             
-            let content = '';
-            
-            // Build content based on tab type
-            if (currentBomTab === 'final') {
-                content = `
-                    <div class="bom-section">
-                        <h4>Assembly Information</h4>
-                        <div class="cost-breakdown">
-                            <div class="cost-item"><span class="label">Parts per Package</span><span>${part.partsPerPackage || 'N/A'}</span></div>
-                            <div class="cost-item"><span class="label">Sales Target</span><span>${formatCurrency(parseNumber(part.salesTarget))}</span></div>
-                        </div>
-                    </div>
-                    ${part.component1 ? `
-                    <div class="bom-section">
-                        <h4>Components</h4>
-                        <div class="component-list">
-                            <div class="component-item">
-                                <span class="name">${part.component1}</span>
-                                <span class="details">Qty: ${part.component1Qty || 'N/A'}</span>
-                            </div>
-                        </div>
-                    </div>` : ''}
-                `;
-            } else if (currentBomTab === 'sub') {
-                content = `
-                    <div class="bom-section">
-                        <h4>Sub Assembly Information</h4>
-                        <div class="cost-breakdown">
-                            <div class="cost-item"><span class="label">Mold Name</span><span>${part.moldName || 'N/A'}</span></div>
-                            <div class="cost-item"><span class="label">Total Cost</span><span>${formatCurrency(parseNumber(part.totalCost))}</span></div>
-                        </div>
-                    </div>
-                    <div class="bom-section">
-                        <h4>Components</h4>
-                        <div class="component-list">
-                            ${part.component1 ? `<div class="component-item"><span class="name">${part.component1}</span><span class="details">Qty: ${part.component1Qty || 'N/A'} | Cost: ${formatCurrency(parseNumber(part.component1Cost))}</span></div>` : ''}
-                            ${part.component2 ? `<div class="component-item"><span class="name">${part.component2}</span><span class="details">Qty: ${part.component2Qty || 'N/A'} | Cost: ${formatCurrency(parseNumber(part.component2Cost))}</span></div>` : ''}
-                        </div>
-                    </div>
-                `;
-            } else {
-                content = `
-                    <div class="bom-section">
-                        <h4>Item Information</h4>
-                        <div class="cost-breakdown">
-                            <div class="cost-item"><span class="label">Description</span><span>${part.description || 'N/A'}</span></div>
-                            <div class="cost-item"><span class="label">Cost</span><span>${formatCurrency(parseNumber(part.cost))}</span></div>
-                            <div class="cost-item"><span class="label">Supplier</span><span>${part.supplier || 'N/A'}</span></div>
-                        </div>
-                    </div>
-                `;
-            }
+            let content = '<div class="bom-section"><h4>Details</h4><div class="cost-breakdown">';
+            Object.entries(part).forEach(([key, value]) => {
+                if (value && key !== 'partName' && key !== 'category') {
+                    content += `<div class="cost-item"><span class="label">${key}</span><span>${value}</span></div>`;
+                }
+            });
+            content += '</div></div>';
             
             document.getElementById('bomContent').innerHTML = content;
         }
