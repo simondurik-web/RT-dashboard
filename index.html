@@ -6,7 +6,6 @@
     <title>Roll Tech P&L Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     <style>
-        /* ===== VARIABLES ===== */
         :root {
             --primary: #1a365d;
             --primary-light: #2c5282;
@@ -26,7 +25,6 @@
             --border: #4a5568;
         }
 
-        /* ===== BASE STYLES ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -34,98 +32,95 @@
             color: var(--text-primary);
             line-height: 1.6;
             min-height: 100vh;
+            font-size: 14px;
         }
 
-        /* ===== SIDEBAR ===== */
+        /* Sidebar */
         .sidebar {
             position: fixed;
             left: 0;
             top: 0;
-            width: 280px;
+            width: 260px;
             height: 100vh;
             background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
-            padding: 20px;
+            padding: 20px 15px;
             overflow-y: auto;
             z-index: 1000;
             box-shadow: 4px 0 15px rgba(0,0,0,0.3);
         }
-        .logo { text-align: center; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 30px; }
-        .logo h1 {
-            font-size: 24px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #fff 0%, #a0aec0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .logo span { font-size: 12px; color: var(--text-secondary); display: block; margin-top: 5px; }
-        .nav-section { margin-bottom: 25px; }
-        .nav-section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 12px; padding-left: 10px; }
+        .logo { text-align: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px; }
+        .logo h1 { font-size: 26px; font-weight: 700; background: linear-gradient(135deg, #fff 0%, #a0aec0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo span { font-size: 13px; color: var(--text-secondary); display: block; margin-top: 5px; }
+        .nav-section { margin-bottom: 20px; }
+        .nav-section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-secondary); margin-bottom: 10px; padding-left: 12px; font-weight: 600; }
         .nav-item {
             display: flex;
             align-items: center;
-            padding: 14px 16px;
-            margin: 4px 0;
+            padding: 12px 14px;
+            margin: 3px 0;
             border-radius: 10px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            color: rgba(255,255,255,0.8);
+            transition: all 0.2s ease;
+            color: rgba(255,255,255,0.85);
             font-size: 14px;
+            font-weight: 500;
         }
-        .nav-item:hover { background: rgba(255,255,255,0.1); transform: translateX(5px); }
+        .nav-item:hover { background: rgba(255,255,255,0.1); transform: translateX(4px); }
         .nav-item.active { background: linear-gradient(135deg, var(--accent) 0%, #4299e1 100%); color: white; box-shadow: 0 4px 15px rgba(49,130,206,0.4); }
+        .nav-item.highlight { background: linear-gradient(135deg, var(--success) 0%, var(--teal) 100%); }
 
-        /* ===== MAIN CONTENT ===== */
-        .main-content { margin-left: 280px; padding: 30px; min-height: 100vh; }
-        .page { display: none; animation: fadeIn 0.5s ease; }
+        /* Main Content */
+        .main-content { margin-left: 260px; padding: 25px 30px; min-height: 100vh; }
+        .page { display: none; animation: fadeIn 0.4s ease; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ===== PAGE HEADER ===== */
-        .page-header { margin-bottom: 30px; }
-        .page-header h2 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+        /* Page Header */
+        .page-header { margin-bottom: 25px; }
+        .page-header h2 { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
         .page-header p { color: var(--text-secondary); font-size: 14px; }
 
-        /* ===== STATS GRID ===== */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px; }
         .stat-card {
             background: var(--bg-card);
-            border-radius: 16px;
-            padding: 24px;
+            border-radius: 14px;
+            padding: 20px 22px;
             border: 1px solid var(--border);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        .stat-card .label { font-size: 12px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 8px; letter-spacing: 0.5px; }
-        .stat-card .value { font-size: 28px; font-weight: 700; }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.25); }
+        .stat-card .label { font-size: 11px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 8px; letter-spacing: 0.5px; font-weight: 600; }
+        .stat-card .value { font-size: 26px; font-weight: 700; }
         .stat-card .value.positive { color: var(--success); }
         .stat-card .value.negative { color: var(--danger); }
+        .stat-card .sub { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
 
-        /* ===== CHARTS ===== */
-        .chart-container { background: var(--bg-card); border-radius: 16px; padding: 24px; border: 1px solid var(--border); margin-bottom: 30px; }
-        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
-        .chart-header h3 { font-size: 18px; font-weight: 600; }
-        .chart-wrapper { position: relative; height: 350px; }
-        .chart-wrapper.large { height: 450px; }
+        /* Charts */
+        .chart-container { background: var(--bg-card); border-radius: 14px; padding: 22px; border: 1px solid var(--border); margin-bottom: 25px; }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 12px; }
+        .chart-header h3 { font-size: 17px; font-weight: 600; }
+        .chart-wrapper { position: relative; height: 320px; }
+        .chart-wrapper.large { height: 400px; }
 
-        /* ===== SEARCH BOX ===== */
+        /* Search Box */
         .search-box {
             background: var(--bg-dark);
             border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 12px 16px;
+            border-radius: 8px;
+            padding: 10px 14px;
             color: white;
             font-size: 14px;
-            min-width: 200px;
+            min-width: 180px;
         }
         .search-box:focus { outline: none; border-color: var(--accent); }
 
-        /* ===== TABLES ===== */
+        /* Tables */
         .data-table { width: 100%; border-collapse: collapse; }
         .data-table th {
             background: var(--primary);
             color: white;
-            padding: 14px 16px;
+            padding: 12px 14px;
             text-align: left;
             font-weight: 600;
             font-size: 12px;
@@ -133,153 +128,126 @@
             letter-spacing: 0.5px;
             position: sticky;
             top: 0;
-            cursor: pointer;
             white-space: nowrap;
         }
-        .data-table th:hover { background: var(--primary-light); }
-        .data-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; }
-        .data-table tr:hover { background: rgba(255,255,255,0.05); }
+        .data-table th:hover { background: var(--primary-light); cursor: pointer; }
+        .data-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); font-size: 13px; }
+        .data-table tr:hover { background: rgba(255,255,255,0.04); }
         .data-table tr.clickable { cursor: pointer; }
-        .data-table tr.clickable:hover { background: rgba(49,130,206,0.2); }
-        .data-table tr.selected { background: rgba(49,130,206,0.3) !important; border-left: 3px solid var(--accent); }
+        .data-table tr.clickable:hover { background: rgba(49,130,206,0.15); }
+        .data-table tr.selected { background: rgba(49,130,206,0.25) !important; border-left: 3px solid var(--accent); }
         .data-table .positive { color: var(--success); font-weight: 600; }
         .data-table .negative { color: var(--danger); font-weight: 600; }
         .data-table .clickable-cell { color: var(--accent); cursor: pointer; text-decoration: underline; }
-        .scrollable-table { max-height: 500px; overflow-y: auto; overflow-x: auto; }
+        .scrollable-table { max-height: 450px; overflow-y: auto; overflow-x: auto; }
 
-        /* ===== BADGES ===== */
-        .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; white-space: nowrap; }
+        /* Badges */
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         .badge.shipped { background: var(--success); color: white; }
-        .badge.forecast { background: var(--warning); color: #1a202c; }
+        .badge.pending { background: var(--warning); color: #1a202c; }
+        .badge.staged { background: var(--purple); color: white; }
+        .badge.forecast { background: var(--orange); color: white; }
         .badge.target-achieved { background: var(--success); color: white; }
         .badge.net-profitable { background: var(--accent); color: white; }
         .badge.marginal-coverage { background: var(--warning); color: #1a202c; }
         .badge.critical-loss { background: var(--danger); color: white; }
 
-        /* ===== DRILLDOWN SECTIONS ===== */
+        /* Drilldown Sections */
         .drilldown-section {
             background: var(--bg-card);
-            border-radius: 16px;
-            padding: 24px;
+            border-radius: 14px;
+            padding: 22px;
             border: 1px solid var(--border);
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             display: none;
         }
         .drilldown-section.active { display: block; animation: fadeIn 0.3s ease; }
-        .drilldown-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
-        .drilldown-header h3 { font-size: 18px; font-weight: 600; }
-        .drilldown-header .subtitle { color: var(--accent); font-size: 14px; margin-top: 4px; }
-        .close-btn { background: var(--danger); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; transition: all 0.2s; }
+        .drilldown-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
+        .drilldown-header h3 { font-size: 17px; font-weight: 600; }
+        .drilldown-header .subtitle { color: var(--accent); font-size: 13px; margin-top: 3px; }
+        .close-btn { background: var(--danger); color: white; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; }
         .close-btn:hover { background: #c53030; }
-        .back-btn { background: var(--bg-dark); color: white; border: 1px solid var(--border); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; margin-right: 10px; transition: all 0.2s; }
+        .back-btn { background: var(--bg-dark); color: white; border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; margin-right: 8px; font-weight: 500; }
         .back-btn:hover { background: var(--primary-light); }
 
-        /* ===== SUMMARY ROW ===== */
-        .summary-row { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
-        .summary-item { background: var(--bg-dark); padding: 15px 20px; border-radius: 10px; min-width: 130px; }
-        .summary-item .label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 5px; }
-        .summary-item .value { font-size: 20px; font-weight: 700; }
+        /* Summary Row */
+        .summary-row { display: flex; gap: 15px; margin-bottom: 18px; flex-wrap: wrap; }
+        .summary-item { background: var(--bg-dark); padding: 14px 18px; border-radius: 10px; min-width: 120px; }
+        .summary-item .label { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px; font-weight: 600; letter-spacing: 0.5px; }
+        .summary-item .value { font-size: 18px; font-weight: 700; }
 
-        /* ===== BREADCRUMB ===== */
-        .breadcrumb { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; font-size: 14px; color: var(--text-secondary); flex-wrap: wrap; }
+        /* Breadcrumb */
+        .breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 13px; color: var(--text-secondary); flex-wrap: wrap; }
         .breadcrumb span { color: var(--accent); font-weight: 600; }
-        .breadcrumb .separator { color: var(--text-secondary); }
 
-        /* ===== TABS ===== */
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .tab { padding: 10px 20px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 13px; }
+        /* Tabs */
+        .tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+        .tab { padding: 10px 18px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 13px; font-weight: 500; }
         .tab:hover { border-color: var(--accent); }
         .tab.active { background: var(--accent); border-color: var(--accent); }
 
-        /* ===== BOM EXPLORER ===== */
-        .bom-grid { display: grid; grid-template-columns: 300px 1fr; gap: 20px; }
-        .bom-selector { max-height: 500px; overflow-y: auto; padding: 15px; background: var(--bg-dark); border-radius: 10px; }
-        .bom-item { padding: 12px 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 13px; margin-bottom: 8px; }
+        /* BOM Explorer */
+        .bom-grid { display: grid; grid-template-columns: 280px 1fr; gap: 20px; }
+        .bom-selector { max-height: 500px; overflow-y: auto; padding: 12px; background: var(--bg-dark); border-radius: 10px; }
+        .bom-item { padding: 10px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 13px; margin-bottom: 6px; }
         .bom-item:hover { border-color: var(--accent); background: var(--primary-light); }
         .bom-item.selected { border-color: var(--accent); background: var(--accent); }
-        .bom-details { background: var(--bg-card); border-radius: 16px; padding: 24px; border: 1px solid var(--border); }
-        .bom-header { border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 20px; }
-        .bom-header h3 { font-size: 24px; margin-bottom: 8px; }
-        .bom-header .category { color: var(--accent); font-size: 14px; }
-        .bom-section { margin-bottom: 25px; }
-        .bom-section h4 { font-size: 14px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; letter-spacing: 0.5px; }
+        .bom-details { background: var(--bg-card); border-radius: 14px; padding: 22px; border: 1px solid var(--border); }
+        .bom-header { border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 18px; }
+        .bom-header h3 { font-size: 22px; margin-bottom: 6px; }
+        .bom-header .category { color: var(--accent); font-size: 13px; font-weight: 500; }
+        .bom-section { margin-bottom: 22px; }
+        .bom-section h4 { font-size: 13px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 10px; letter-spacing: 0.5px; font-weight: 600; }
         .component-list { display: grid; gap: 8px; }
-        .component-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--bg-dark); border-radius: 8px; flex-wrap: wrap; gap: 10px; }
-        .component-item .name { font-weight: 500; }
-        .component-item .details { display: flex; gap: 20px; color: var(--text-secondary); font-size: 13px; }
-        .cost-breakdown { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+        .component-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--bg-dark); border-radius: 8px; flex-wrap: wrap; gap: 8px; }
+        .component-item .name { font-weight: 600; font-size: 13px; }
+        .component-item .details { display: flex; gap: 15px; color: var(--text-secondary); font-size: 12px; }
+        .cost-breakdown { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
         .cost-item { display: flex; justify-content: space-between; padding: 10px 14px; background: var(--bg-dark); border-radius: 8px; font-size: 13px; }
         .cost-item .label { color: var(--text-secondary); }
+        .cost-item .value { font-weight: 600; }
+        .highlight-box { background: linear-gradient(135deg, var(--accent) 0%, #4299e1 100%); border-radius: 10px; padding: 16px; margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 12px; text-align: center; }
+        .highlight-box .item .value { font-size: 20px; font-weight: 700; }
+        .highlight-box .item .label { font-size: 11px; opacity: 0.85; }
 
-        /* ===== GRID LAYOUTS ===== */
-        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
-        @media (max-width: 1200px) { .grid-2 { grid-template-columns: 1fr; } }
+        /* Grid Layouts */
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; }
+        @media (max-width: 1200px) { .grid-2 { grid-template-columns: 1fr; } .stats-grid { grid-template-columns: repeat(2, 1fr); } }
 
-        /* ===== LOADING STATE ===== */
+        /* Loading */
         .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; }
-        .spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .spinner { width: 45px; height: 45px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .error-state { display: none; text-align: center; padding: 60px 20px; }
-        .error-state h3 { color: var(--danger); margin-bottom: 10px; }
+        .error-state { display: none; text-align: center; padding: 50px 20px; }
 
-        /* ===== MOBILE RESPONSIVE ===== */
+        /* Mobile */
         @media (max-width: 900px) {
             .sidebar { width: 220px; }
             .main-content { margin-left: 220px; padding: 20px; }
         }
         @media (max-width: 768px) {
-            .sidebar { 
-                position: fixed;
-                left: -280px;
-                transition: left 0.3s ease;
-                z-index: 2000;
-            }
+            .sidebar { position: fixed; left: -280px; transition: left 0.3s ease; z-index: 2000; width: 260px; }
             .sidebar.open { left: 0; }
             .main-content { margin-left: 0; padding: 15px; }
             .mobile-header { display: flex !important; }
             .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1999; }
             .sidebar-overlay.active { display: block; }
             .bom-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
         }
 
-        .mobile-header {
-            display: none;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 20px;
-            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
+        .mobile-header { display: none; align-items: center; justify-content: space-between; padding: 14px 18px; background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%); position: sticky; top: 0; z-index: 1000; }
         .mobile-header h1 { font-size: 18px; }
-        .mobile-header .subtitle { font-size: 11px; color: var(--text-secondary); }
-        .menu-toggle {
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: white;
-            font-size: 24px;
-            width: 44px;
-            height: 44px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
+        .menu-toggle { background: rgba(255,255,255,0.1); border: none; color: white; font-size: 22px; width: 42px; height: 42px; border-radius: 8px; cursor: pointer; }
     </style>
 </head>
 <body>
-    <!-- Mobile Header -->
     <div class="mobile-header">
-        <div>
-            <h1>Roll Tech</h1>
-            <span class="subtitle">P&L Analytics Dashboard</span>
-        </div>
+        <div><h1>Roll Tech</h1><span style="font-size:11px;color:var(--text-secondary);">P&L Analytics</span></div>
         <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
     </div>
-
-    <!-- Sidebar Overlay (Mobile) -->
     <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo">
             <h1>Roll Tech</h1>
@@ -296,65 +264,63 @@
             <div class="nav-section-title">Bill of Materials</div>
             <div class="nav-item" data-page="bom" onclick="navigateTo('bom')">📋 BOM Explorer</div>
         </div>
-        <div class="nav-section" style="margin-top:auto; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1);">
-            <div style="font-size:11px; color:var(--text-secondary); padding:10px;">
-                <div id="dataInfo">Loading...</div>
-            </div>
+        <div style="margin-top:auto; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1); font-size:11px; color:var(--text-secondary); padding:15px 10px;">
+            <div id="dataInfo">Loading...</div>
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
-        <!-- Loading State -->
         <div id="loadingState" class="loading">
             <div class="spinner"></div>
-            <p style="margin-top:20px; color:var(--text-secondary);">Loading data from Google Sheets...</p>
+            <p style="margin-top:18px; color:var(--text-secondary);">Loading data from Google Sheets...</p>
         </div>
-
-        <!-- Error State -->
         <div id="errorState" class="error-state">
-            <h3>⚠️ Error Loading Data</h3>
-            <p id="errorMessage" style="color:var(--text-secondary);"></p>
-            <button onclick="location.reload()" style="margin-top:20px; padding:10px 20px; background:var(--accent); color:white; border:none; border-radius:8px; cursor:pointer;">Retry</button>
+            <h3 style="color:var(--danger);">⚠️ Error Loading Data</h3>
+            <p id="errorMessage" style="color:var(--text-secondary); margin:10px 0;"></p>
+            <button onclick="location.reload()" style="padding:10px 20px; background:var(--accent); color:white; border:none; border-radius:8px; cursor:pointer;">Retry</button>
         </div>
 
         <!-- Overview Page -->
         <div id="overview" class="page">
             <div class="page-header">
                 <h2>Dashboard Overview</h2>
-                <p>Summary of P&L performance across all Roll Tech orders</p>
+                <p>Complete profit and loss analysis for Roll Tech operations</p>
             </div>
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="label">Total Revenue</div>
                     <div class="value" id="statRevenue">$0</div>
+                    <div class="sub" id="statOrderCount">0 orders</div>
                 </div>
                 <div class="stat-card">
-                    <div class="label">Total P/L</div>
+                    <div class="label">Total Profit/Loss</div>
                     <div class="value" id="statPL">$0</div>
+                    <div class="sub" id="statMargin">Margin: 0%</div>
                 </div>
                 <div class="stat-card">
-                    <div class="label">Total Quantity</div>
-                    <div class="value" id="statQuantity">0</div>
+                    <div class="label">Shipped P/L</div>
+                    <div class="value" id="statShippedPL">$0</div>
+                    <div class="sub" id="statShippedCount">0 orders</div>
                 </div>
                 <div class="stat-card">
-                    <div class="label">Total Orders</div>
-                    <div class="value" id="statOrders">0</div>
+                    <div class="label">Forecasted P/L</div>
+                    <div class="value" id="statForecastPL">$0</div>
+                    <div class="sub" id="statForecastCount">0 orders</div>
                 </div>
-            </div>
-            <div class="chart-container">
-                <div class="chart-header"><h3>Top 10 Parts by P/L</h3></div>
-                <div class="chart-wrapper"><canvas id="topPartsChart"></canvas></div>
             </div>
             <div class="grid-2">
                 <div class="chart-container">
-                    <div class="chart-header"><h3>Customer Distribution</h3></div>
-                    <div class="chart-wrapper"><canvas id="customerPieChart"></canvas></div>
+                    <div class="chart-header"><h3>Top 10 Parts by P/L Impact</h3></div>
+                    <div class="chart-wrapper large"><canvas id="topPartsChart"></canvas></div>
                 </div>
                 <div class="chart-container">
-                    <div class="chart-header"><h3>Monthly Trend</h3></div>
-                    <div class="chart-wrapper"><canvas id="monthlyTrendChart"></canvas></div>
+                    <div class="chart-header"><h3>Customer P/L Distribution</h3></div>
+                    <div class="chart-wrapper large"><canvas id="customerPieChart"></canvas></div>
                 </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-header"><h3>Monthly P/L Trend</h3></div>
+                <div class="chart-wrapper"><canvas id="monthlyTrendChart"></canvas></div>
             </div>
         </div>
 
@@ -370,19 +336,9 @@
                     <input type="text" class="search-box" id="partsSearch" placeholder="Search parts...">
                 </div>
                 <div class="scrollable-table">
-                    <table class="data-table" id="partsTable">
-                        <thead>
-                            <tr>
-                                <th>Part Number</th>
-                                <th>Orders</th>
-                                <th>Quantity</th>
-                                <th>Revenue</th>
-                                <th>P/L</th>
-                                <th>Margin</th>
-                            </tr>
-                        </thead>
-                        <tbody id="partsTableBody"></tbody>
-                    </table>
+                    <table class="data-table"><thead><tr>
+                        <th>Part Number</th><th>Orders</th><th>Quantity</th><th>Revenue</th><th>P/L</th><th>Margin</th>
+                    </tr></thead><tbody id="partsTableBody"></tbody></table>
                 </div>
             </div>
         </div>
@@ -399,87 +355,36 @@
                     <input type="text" class="search-box" id="customersSearch" placeholder="Search customers...">
                 </div>
                 <div class="scrollable-table">
-                    <table class="data-table" id="customersTable">
-                        <thead>
-                            <tr>
-                                <th>Customer</th>
-                                <th>Quantity</th>
-                                <th>P/L</th>
-                                <th>Revenue</th>
-                                <th>Margin</th>
-                            </tr>
-                        </thead>
-                        <tbody id="customersTableBody"></tbody>
-                    </table>
+                    <table class="data-table"><thead><tr>
+                        <th>Customer</th><th>Quantity</th><th>P/L</th><th>Revenue</th><th>Margin</th>
+                    </tr></thead><tbody id="customersTableBody"></tbody></table>
                 </div>
             </div>
-
-            <!-- Level 2: Product Breakdown (by Part Number) -->
             <div id="customerProductBreakdown" class="drilldown-section">
                 <div class="drilldown-header">
-                    <div>
-                        <h3>🏭 Product Breakdown</h3>
-                        <div class="subtitle" id="selectedCustomerTitle">Customer: Loading...</div>
-                    </div>
-                    <button class="close-btn" onclick="closeCustomerProductDrilldown()">✕ Close</button>
+                    <div><h3>🏭 Product Breakdown</h3><div class="subtitle" id="selectedCustomerTitle"></div></div>
+                    <button class="close-btn" onclick="closeCustomerDrilldown()">✕ Close</button>
                 </div>
                 <div class="summary-row" id="customerProductSummary"></div>
                 <div class="scrollable-table">
-                    <table class="data-table" id="customerProductTable">
-                        <thead>
-                            <tr>
-                                <th>Part Number</th>
-                                <th>Qty</th>
-                                <th>Unit Price</th>
-                                <th>Contribution Level</th>
-                                <th>Variable Cost</th>
-                                <th>Total Cost</th>
-                                <th>Margin %</th>
-                                <th>P/L</th>
-                                <th>Revenue</th>
-                            </tr>
-                        </thead>
-                        <tbody id="customerProductTableBody"></tbody>
-                    </table>
+                    <table class="data-table"><thead><tr>
+                        <th>Part Number</th><th>Qty</th><th>Unit Price</th><th>Contribution</th><th>Var Cost</th><th>Total Cost</th><th>Margin %</th><th>P/L</th><th>Revenue</th>
+                    </tr></thead><tbody id="customerProductTableBody"></tbody></table>
                 </div>
             </div>
-
-            <!-- Level 3: Order Details (individual orders for a part) -->
-            <div id="customerPartOrderDetails" class="drilldown-section">
+            <div id="customerPartOrders" class="drilldown-section">
                 <div class="drilldown-header">
                     <div>
-                        <div class="breadcrumb">
-                            Customer: <span id="breadcrumbCustomer2"></span>
-                            <span class="separator">›</span>
-                            Part: <span id="breadcrumbPart"></span>
-                        </div>
-                        <h3 id="partOrderDetailsTitle">Order Details</h3>
+                        <div class="breadcrumb">Customer: <span id="bc2Customer"></span> › Part: <span id="bc2Part"></span></div>
+                        <h3 id="partOrdersTitle">Order Details</h3>
                     </div>
-                    <div>
-                        <button class="back-btn" onclick="backToProductBreakdown()">← Back to Products</button>
-                        <button class="close-btn" onclick="closePartOrderDrilldown()">✕ Close All</button>
-                    </div>
+                    <div><button class="back-btn" onclick="backToProducts()">← Back</button><button class="close-btn" onclick="closeAllCustomerDrilldowns()">✕ Close All</button></div>
                 </div>
-                <div class="summary-row" id="partOrderSummary"></div>
+                <div class="summary-row" id="partOrdersSummary"></div>
                 <div class="scrollable-table">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>PO #</th>
-                                <th>Status</th>
-                                <th>Qty</th>
-                                <th>Unit Price</th>
-                                <th>Contribution Level</th>
-                                <th>Variable Cost</th>
-                                <th>Total Cost</th>
-                                <th>Profit/Part</th>
-                                <th>P/L</th>
-                                <th>Revenue</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody id="partOrderTableBody"></tbody>
-                    </table>
+                    <table class="data-table"><thead><tr>
+                        <th>PO #</th><th>Status</th><th>Qty</th><th>Unit Price</th><th>Contribution</th><th>Var Cost</th><th>Total Cost</th><th>Profit/Part</th><th>P/L</th><th>Revenue</th><th>Date</th>
+                    </tr></thead><tbody id="partOrdersTableBody"></tbody></table>
                 </div>
             </div>
         </div>
@@ -497,81 +402,36 @@
             <div class="chart-container">
                 <div class="chart-header"><h3>Monthly Breakdown</h3></div>
                 <div class="scrollable-table">
-                    <table class="data-table" id="dateTable">
-                        <thead>
-                            <tr>
-                                <th>Month</th>
-                                <th>Status</th>
-                                <th>Orders</th>
-                                <th>Quantity</th>
-                                <th>Revenue</th>
-                                <th>P/L</th>
-                            </tr>
-                        </thead>
-                        <tbody id="datesTableBody"></tbody>
-                    </table>
+                    <table class="data-table"><thead><tr>
+                        <th>Month</th><th>Status</th><th>Orders</th><th>Quantity</th><th>Revenue</th><th>P/L</th>
+                    </tr></thead><tbody id="datesTableBody"></tbody></table>
                 </div>
             </div>
-
-            <!-- Monthly Customer Drilldown -->
-            <div id="monthlyCustomerBreakdown" class="drilldown-section">
+            <div id="monthlyDrilldown" class="drilldown-section">
                 <div class="drilldown-header">
-                    <div>
-                        <h3 id="selectedMonthTitle">Monthly Breakdown</h3>
-                    </div>
-                    <button class="close-btn" onclick="closeMonthlyDrilldown()">✕ Close</button>
+                    <div><h3 id="monthDrilldownTitle">Period Details</h3></div>
+                    <button class="close-btn" onclick="closeMonthDrilldown()">✕ Close</button>
                 </div>
-                <div class="summary-row" id="monthSummary"></div>
+                <div class="summary-row" id="monthDrilldownSummary"></div>
                 <div class="scrollable-table">
-                    <table class="data-table" id="monthlyCustomerTable">
-                        <thead>
-                            <tr>
-                                <th>Customer</th>
-                                <th>Orders</th>
-                                <th>Quantity</th>
-                                <th>Revenue</th>
-                                <th>P/L</th>
-                                <th>Margin</th>
-                            </tr>
-                        </thead>
-                        <tbody id="monthlyCustomerTableBody"></tbody>
-                    </table>
+                    <table class="data-table"><thead><tr>
+                        <th>Customer</th><th>Orders</th><th>Quantity</th><th>Revenue</th><th>P/L</th><th>Margin</th>
+                    </tr></thead><tbody id="monthCustomersTableBody"></tbody></table>
                 </div>
             </div>
-
-            <!-- Customer Order Details Drilldown -->
-            <div id="customerOrderDetails" class="drilldown-section">
+            <div id="monthCustomerOrders" class="drilldown-section">
                 <div class="drilldown-header">
                     <div>
-                        <div class="breadcrumb">
-                            Period: <span id="breadcrumbMonth"></span>
-                            <span class="separator">›</span>
-                            Customer: <span id="breadcrumbCustomer"></span>
-                        </div>
-                        <h3 id="orderDetailsTitle">Order Details</h3>
+                        <div class="breadcrumb">Period: <span id="bcMonth"></span> › Customer: <span id="bcCustomer"></span></div>
+                        <h3 id="monthCustomerTitle">Orders</h3>
                     </div>
-                    <div>
-                        <button class="back-btn" onclick="backToMonthlyBreakdown()">← Back</button>
-                        <button class="close-btn" onclick="closeCustomerOrderDrilldown()">✕ Close</button>
-                    </div>
+                    <div><button class="back-btn" onclick="backToMonthCustomers()">← Back</button><button class="close-btn" onclick="closeAllDateDrilldowns()">✕ Close All</button></div>
                 </div>
-                <div class="summary-row" id="customerOrderSummary"></div>
+                <div class="summary-row" id="monthCustomerSummary"></div>
                 <div class="scrollable-table">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Part</th>
-                                <th>PO #</th>
-                                <th>Status</th>
-                                <th>Qty</th>
-                                <th>Unit Price</th>
-                                <th>Profit/Part</th>
-                                <th>P/L</th>
-                                <th>Revenue</th>
-                            </tr>
-                        </thead>
-                        <tbody id="customerOrderTableBody"></tbody>
-                    </table>
+                    <table class="data-table"><thead><tr>
+                        <th>Part</th><th>PO #</th><th>Status</th><th>Qty</th><th>Unit Price</th><th>Profit/Part</th><th>P/L</th><th>Revenue</th>
+                    </tr></thead><tbody id="monthCustomerOrdersBody"></tbody></table>
                 </div>
             </div>
         </div>
@@ -593,17 +453,13 @@
                     <input type="text" class="search-box" id="bomSearch" placeholder="Search parts...">
                 </div>
                 <div class="bom-grid">
-                    <div class="bom-selector" id="bomSelector">
-                        <p style="color:var(--text-secondary);">Loading BOM data...</p>
-                    </div>
-                    <div class="bom-details" id="bomDetails">
+                    <div class="bom-selector" id="bomSelector"><p style="color:var(--text-secondary);">Loading...</p></div>
+                    <div class="bom-details">
                         <div class="bom-header">
                             <h3 id="bomPartName">Select a part</h3>
                             <div class="category" id="bomCategory"></div>
                         </div>
-                        <div id="bomContent">
-                            <p style="color:var(--text-secondary);">Click on a part from the list to view details.</p>
-                        </div>
+                        <div id="bomContent"><p style="color:var(--text-secondary);">Click on a part from the list to view details.</p></div>
                     </div>
                 </div>
             </div>
@@ -611,231 +467,129 @@
     </div>
 
     <script>
-        // ===== CONFIGURATION =====
         const SHEET_ID = '1bK0Ne-vX3i5wGoqyAklnyFDUNdE-WaN4Xs5XjggBSXw';
         const CONFIG_GID = '912029812';
         
-        // ===== GLOBAL STATE =====
-        let config = {};
-        let ordersData = [];
-        let bomFinalData = [];
-        let bomSubData = [];
-        let bomIndividualData = [];
-        let charts = {};
-        let selectedMonth = null;
-        let selectedCustomer = null;
-        let selectedPart = null;
-        let currentBomTab = 'final';
+        let config = {}, ordersData = [], bomFinalData = [], bomSubData = [], bomIndividualData = [], charts = {};
+        let selectedMonth = null, selectedCustomer = null, selectedPart = null, currentBomTab = 'final';
 
-        // ===== UTILITY FUNCTIONS =====
-        function formatCurrency(value) {
-            if (value === null || value === undefined || isNaN(value)) return '$0';
-            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+        // Utilities
+        const formatCurrency = v => v == null || isNaN(v) ? '$0.00' : new Intl.NumberFormat('en-US', {style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}).format(v);
+        const formatNumber = v => v == null || isNaN(v) ? '0' : new Intl.NumberFormat('en-US').format(Math.round(v));
+        const parseNumber = v => { if (!v || v === '') return 0; if (typeof v === 'number') return v; let c = String(v).replace(/[$,\s]/g,''); if (c.startsWith('(') && c.endsWith(')')) c = '-' + c.slice(1,-1); const n = parseFloat(c); return isNaN(n) ? 0 : n; };
+        const parseMonth = d => { if (!d) return null; if (d.includes('/')) { const p = d.split('/'); if (p.length >= 3) return `${p[2].length===2?'20'+p[2]:p[2]}-${p[0].padStart(2,'0')}`; } else if (d.includes('-')) return d.substring(0,7); return null; };
+        
+        function getStatusBadge(s) {
+            if (!s) return '<span class="badge">Unknown</span>';
+            const l = s.toLowerCase();
+            if (l === 'shipped') return '<span class="badge shipped">Shipped</span>';
+            if (l === 'pending') return '<span class="badge pending">Pending</span>';
+            if (l === 'staged') return '<span class="badge staged">Staged</span>';
+            return `<span class="badge forecast">${s}</span>`;
         }
-
-        function formatNumber(value) {
-            if (value === null || value === undefined || isNaN(value)) return '0';
-            return new Intl.NumberFormat('en-US').format(Math.round(value));
-        }
-
-        function parseNumber(value) {
-            if (!value || value === '') return 0;
-            if (typeof value === 'number') return value;
-            let cleaned = String(value).replace(/[$,\s]/g, '');
-            if (cleaned.startsWith('(') && cleaned.endsWith(')')) {
-                cleaned = '-' + cleaned.slice(1, -1);
-            }
-            const num = parseFloat(cleaned);
-            return isNaN(num) ? 0 : num;
-        }
-
+        
         function getContributionBadge(level) {
-            if (!level) return '<span class="badge">Unknown</span>';
+            if (!level) return '<span class="badge">-</span>';
             const l = level.toLowerCase();
-            if (l.includes('target achieved')) return '<span class="badge target-achieved">Target Achieved</span>';
-            if (l.includes('net profitable')) return '<span class="badge net-profitable">Net Profitable</span>';
-            if (l.includes('marginal')) return '<span class="badge marginal-coverage">Marginal Coverage</span>';
+            if (l.includes('target')) return '<span class="badge target-achieved">Target Achieved</span>';
+            if (l.includes('net')) return '<span class="badge net-profitable">Net Profitable</span>';
+            if (l.includes('marginal')) return '<span class="badge marginal-coverage">Marginal</span>';
             if (l.includes('critical')) return '<span class="badge critical-loss">Critical Loss</span>';
             return `<span class="badge">${level}</span>`;
         }
 
-        function parseMonth(date) {
-            if (!date) return null;
-            if (date.includes('/')) {
-                const parts = date.split('/');
-                if (parts.length >= 3) {
-                    const m = parts[0].padStart(2, '0');
-                    const y = parts[2].length === 2 ? '20' + parts[2] : parts[2];
-                    return `${y}-${m}`;
-                }
-            } else if (date.includes('-')) {
-                return date.substring(0, 7);
-            }
-            return null;
-        }
-
-        // ===== CSV PARSING =====
+        // CSV Parsing
         function parseCSV(text) {
-            const lines = text.split('\n');
-            if (lines.length < 2) return [];
-            const headers = parseCSVLine(lines[0]);
-            const data = [];
-            for (let i = 1; i < lines.length; i++) {
-                if (!lines[i].trim()) continue;
-                const values = parseCSVLine(lines[i]);
+            const lines = text.split('\n'); if (lines.length < 2) return [];
+            const headers = parseCSVLine(lines[0]).map(h => h.trim()); // TRIM headers!
+            return lines.slice(1).filter(l => l.trim()).map(line => {
+                const values = parseCSVLine(line);
                 const row = {};
-                headers.forEach((header, index) => {
-                    row[header] = values[index] || '';
-                });
-                data.push(row);
-            }
-            return data;
+                headers.forEach((h, i) => row[h] = (values[i] || '').trim());
+                return row;
+            });
         }
-
         function parseCSVLine(line) {
-            const result = [];
-            let current = '';
-            let inQuotes = false;
+            const result = []; let current = '', inQuotes = false;
             for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                if (char === '"') {
-                    inQuotes = !inQuotes;
-                } else if (char === ',' && !inQuotes) {
-                    result.push(current.trim());
-                    current = '';
-                } else {
-                    current += char;
-                }
+                const c = line[i];
+                if (c === '"') inQuotes = !inQuotes;
+                else if (c === ',' && !inQuotes) { result.push(current); current = ''; }
+                else current += c;
             }
-            result.push(current.trim());
-            return result;
+            result.push(current); return result;
         }
-
         async function fetchSheetData(gid) {
-            const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`;
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`Failed to fetch data from GID ${gid}`);
-            const text = await response.text();
-            return parseCSV(text);
+            const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`);
+            if (!r.ok) throw new Error(`Failed to fetch GID ${gid}`);
+            return parseCSV(await r.text());
+        }
+        function parseColumnMappings(t) {
+            if (!t) return {};
+            const m = {};
+            t.split(/[;\n]/).forEach(line => { const match = line.match(/(.+?)\s*→\s*(.+)/); if (match) m[match[2].trim()] = match[1].trim(); });
+            return m;
         }
 
-        function parseColumnMappings(mappingText) {
-            if (!mappingText) return {};
-            const lines = mappingText.split(/[;\n]/);
-            const mappings = {};
-            lines.forEach(line => {
-                const match = line.match(/(.+?)\s*→\s*(.+)/);
-                if (match) {
-                    mappings[match[2].trim()] = match[1].trim();
-                }
-            });
-            return mappings;
-        }
-
-        function applyMapping(row, mapping) {
-            const mapped = {};
-            for (const [fieldName, columnName] of Object.entries(mapping)) {
-                mapped[fieldName] = row[columnName] || '';
-            }
-            // Preserve important raw columns
-            if (row['Category']) mapped.category = row['Category'];
-            if (row['Variable Cost']) mapped.variableCost = row['Variable Cost'];
-            if (row['Total Cost']) mapped.totalCost = row['Total Cost'];
-            if (row['Contribution Level']) mapped.contributionLevel = row['Contribution Level'];
-            return mapped;
-        }
-
-        // ===== NAVIGATION =====
-        function toggleSidebar() {
-            const sidebar = document.querySelector('.sidebar');
-            const overlay = document.querySelector('.sidebar-overlay');
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('active');
-        }
-
-        function navigateTo(pageName) {
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-                if (item.dataset.page === pageName) item.classList.add('active');
-            });
-            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-            document.getElementById(pageName).classList.add('active');
+        // Navigation
+        function toggleSidebar() { document.querySelector('.sidebar').classList.toggle('open'); document.querySelector('.sidebar-overlay').classList.toggle('active'); }
+        function navigateTo(page) {
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.toggle('active', i.dataset.page === page));
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(page).classList.add('active');
             document.querySelectorAll('.drilldown-section').forEach(d => d.classList.remove('active'));
             if (window.innerWidth < 768) toggleSidebar();
         }
 
-        // ===== DATA LOADING =====
+        // Data Loading
         async function loadDashboard() {
             try {
-                console.log('Loading Dashboard Config...');
                 const configData = await fetchSheetData(CONFIG_GID);
-
                 config = {};
                 configData.forEach(row => {
                     if (row['Dashboard Name'] === 'P&L Dashboard' && row['GID Number']) {
-                        const tabName = row['Tab Name'];
-                        const gid = row['GID Number'];
-                        const mappings = parseColumnMappings(row['Column Mappings']);
-                        config[tabName] = { gid, mappings };
+                        config[row['Tab Name']] = { gid: row['GID Number'], mappings: parseColumnMappings(row['Column Mappings']) };
                     }
                 });
 
                 if (config['Orders Data']) {
-                    console.log('Loading Orders Data...');
-                    const rawData = await fetchSheetData(config['Orders Data'].gid);
-                    
-                    ordersData = rawData
-                        .map(row => applyMapping(row, config['Orders Data'].mappings))
-                        .filter(row => {
-                            const category = row.category || '';
-                            return category.toLowerCase().includes('roll tech');
-                        })
-                        .filter(row => row.partNumber);
-                    
-                    console.log('Filtered Roll Tech orders:', ordersData.length);
+                    const raw = await fetchSheetData(config['Orders Data'].gid);
+                    ordersData = raw.filter(r => (r['Category'] || '').toLowerCase().includes('roll tech') && r['RT Part #']);
+                    console.log('Loaded', ordersData.length, 'Roll Tech orders');
                 }
 
+                // Load BOM data directly (without relying on possibly incorrect mappings)
                 await loadBOMData();
 
-                document.getElementById('dataInfo').innerHTML = `
-                    <strong>Data Loaded</strong><br>
-                    ${ordersData.length} Roll Tech orders<br>
-                    Last refreshed: ${new Date().toLocaleTimeString()}
-                `;
-
+                document.getElementById('dataInfo').innerHTML = `<strong>Data Loaded</strong><br>${ordersData.length} Roll Tech orders<br>Last: ${new Date().toLocaleTimeString()}`;
                 document.getElementById('loadingState').style.display = 'none';
                 document.getElementById('overview').classList.add('active');
-
                 initializeDashboard();
-
-            } catch (error) {
-                console.error('Error loading dashboard:', error);
+            } catch (e) {
+                console.error('Load error:', e);
                 document.getElementById('loadingState').style.display = 'none';
                 document.getElementById('errorState').style.display = 'block';
-                document.getElementById('errorMessage').textContent = error.message;
+                document.getElementById('errorMessage').textContent = e.message;
             }
         }
 
         async function loadBOMData() {
             try {
                 if (config['BOM individual items Reference data']) {
-                    const rawBOM = await fetchSheetData(config['BOM individual items Reference data'].gid);
-                    bomIndividualData = rawBOM.map(row => applyMapping(row, config['BOM individual items Reference data'].mappings));
+                    bomIndividualData = await fetchSheetData(config['BOM individual items Reference data'].gid);
+                    console.log('Individual BOM:', bomIndividualData.length, 'items');
                 }
                 if (config['BOM Sub assembly Reference data']) {
-                    const rawBOM = await fetchSheetData(config['BOM Sub assembly Reference data'].gid);
-                    bomSubData = rawBOM.map(row => applyMapping(row, config['BOM Sub assembly Reference data'].mappings));
+                    bomSubData = await fetchSheetData(config['BOM Sub assembly Reference data'].gid);
+                    console.log('Sub Assembly BOM:', bomSubData.length, 'items');
                 }
                 if (config['BOM Final assembly Reference data']) {
-                    const rawBOM = await fetchSheetData(config['BOM Final assembly Reference data'].gid);
-                    bomFinalData = rawBOM.map(row => applyMapping(row, config['BOM Final assembly Reference data'].mappings));
+                    bomFinalData = await fetchSheetData(config['BOM Final assembly Reference data'].gid);
+                    console.log('Final Assembly BOM:', bomFinalData.length, 'items');
                 }
-            } catch (e) {
-                console.warn('BOM data load error:', e);
-            }
+            } catch (e) { console.warn('BOM load error:', e); }
         }
 
-        // ===== DASHBOARD INITIALIZATION =====
         function initializeDashboard() {
             updateStats();
             updateTopPartsChart();
@@ -849,166 +603,255 @@
         }
 
         function updateStats() {
-            const totalRevenue = ordersData.reduce((sum, row) => sum + parseNumber(row.revenue), 0);
-            const totalPL = ordersData.reduce((sum, row) => sum + parseNumber(row.profitLoss), 0);
-            const totalQty = ordersData.reduce((sum, row) => sum + parseNumber(row.quantity), 0);
-            const totalOrders = ordersData.length;
-
+            let totalRevenue = 0, totalPL = 0, shippedPL = 0, forecastPL = 0, shippedCount = 0, forecastCount = 0;
+            ordersData.forEach(r => {
+                const rev = parseNumber(r['Revenue']);
+                const pl = parseNumber(r['P/L']);
+                const status = (r['Work order Status'] || '').toLowerCase();
+                totalRevenue += rev;
+                totalPL += pl;
+                if (status === 'shipped') { shippedPL += pl; shippedCount++; }
+                else { forecastPL += pl; forecastCount++; }
+            });
+            const margin = totalRevenue ? ((totalPL / totalRevenue) * 100).toFixed(2) : 0;
+            
             document.getElementById('statRevenue').textContent = formatCurrency(totalRevenue);
+            document.getElementById('statOrderCount').textContent = `${ordersData.length} orders`;
             document.getElementById('statPL').textContent = formatCurrency(totalPL);
             document.getElementById('statPL').className = 'value ' + (totalPL >= 0 ? 'positive' : 'negative');
-            document.getElementById('statQuantity').textContent = formatNumber(totalQty);
-            document.getElementById('statOrders').textContent = formatNumber(totalOrders);
+            document.getElementById('statMargin').textContent = `Margin: ${margin}%`;
+            document.getElementById('statShippedPL').textContent = formatCurrency(shippedPL);
+            document.getElementById('statShippedPL').className = 'value ' + (shippedPL >= 0 ? 'positive' : 'negative');
+            document.getElementById('statShippedCount').textContent = `${shippedCount} orders`;
+            document.getElementById('statForecastPL').textContent = formatCurrency(forecastPL);
+            document.getElementById('statForecastPL').className = 'value ' + (forecastPL >= 0 ? 'positive' : 'negative');
+            document.getElementById('statForecastCount').textContent = `${forecastCount} orders`;
         }
 
         function updateTopPartsChart() {
-            const partStats = {};
-            ordersData.forEach(row => {
-                const part = row.partNumber;
-                if (!part) return;
-                if (!partStats[part]) partStats[part] = { revenue: 0, pl: 0 };
-                partStats[part].revenue += parseNumber(row.revenue);
-                partStats[part].pl += parseNumber(row.profitLoss);
+            const stats = {};
+            ordersData.forEach(r => {
+                const part = r['RT Part #'];
+                if (!stats[part]) stats[part] = { pl: 0, revenue: 0 };
+                stats[part].pl += parseNumber(r['P/L']);
+                stats[part].revenue += parseNumber(r['Revenue']);
             });
-
-            const sorted = Object.entries(partStats).sort((a, b) => b[1].pl - a[1].pl).slice(0, 10);
-
+            // Sort by P/L ascending (most negative first = biggest losses)
+            const sorted = Object.entries(stats).sort((a, b) => a[1].pl - b[1].pl).slice(0, 10);
+            
             const ctx = document.getElementById('topPartsChart');
             if (charts.topParts) charts.topParts.destroy();
-            
             charts.topParts = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: sorted.map(([part]) => part),
-                    datasets: [{
-                        data: sorted.map(([, stats]) => stats.pl),
-                        backgroundColor: sorted.map(([, stats]) => stats.pl >= 0 ? '#38a169' : '#e53e3e'),
-                        borderRadius: 4
-                    }]
+                    labels: sorted.map(([p]) => p),
+                    datasets: [{ data: sorted.map(([,s]) => s.pl), backgroundColor: sorted.map(([,s]) => s.pl >= 0 ? '#38a169' : '#e53e3e'), borderRadius: 4 }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => formatCurrency(ctx.raw) } } },
                     scales: {
-                        y: { ticks: { callback: v => formatCurrency(v), color: '#a0aec0' }, grid: { color: '#4a5568' } },
-                        x: { ticks: { color: '#a0aec0', maxRotation: 45 }, grid: { display: false } }
+                        x: { ticks: { callback: v => formatCurrency(v), color: '#a0aec0' }, grid: { color: '#4a5568' } },
+                        y: { ticks: { color: '#a0aec0', font: { size: 11 } }, grid: { display: false } }
                     }
                 }
             });
         }
 
         function updateCustomerPieChart() {
-            const customerStats = {};
-            ordersData.forEach(row => {
-                const customer = row.customer || 'Unknown';
-                if (!customerStats[customer]) customerStats[customer] = { revenue: 0, pl: 0 };
-                customerStats[customer].revenue += parseNumber(row.revenue);
-                customerStats[customer].pl += parseNumber(row.profitLoss);
+            const stats = {};
+            ordersData.forEach(r => {
+                const c = r['Customer'] || 'Unknown';
+                if (!stats[c]) stats[c] = { pl: 0 };
+                stats[c].pl += Math.abs(parseNumber(r['P/L']));
             });
-
-            const sorted = Object.entries(customerStats).sort((a, b) => b[1].revenue - a[1].revenue).slice(0, 10);
-
+            const sorted = Object.entries(stats).sort((a, b) => b[1].pl - a[1].pl).slice(0, 8);
+            
             const ctx = document.getElementById('customerPieChart');
             if (charts.customerPie) charts.customerPie.destroy();
-
             charts.customerPie = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: sorted.map(([name]) => name.substring(0, 20)),
-                    datasets: [{
-                        data: sorted.map(([, stats]) => stats.revenue),
-                        backgroundColor: ['#3182ce', '#38a169', '#e53e3e', '#d69e2e', '#805ad5', '#319795', '#dd6b20', '#9f7aea', '#48bb78', '#f687b3']
-                    }]
+                    labels: sorted.map(([n]) => n.substring(0, 20)),
+                    datasets: [{ data: sorted.map(([,s]) => s.pl), backgroundColor: ['#e53e3e','#dd6b20','#d69e2e','#38a169','#319795','#3182ce','#805ad5','#d53f8c'], borderWidth: 0 }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'right', labels: { color: '#a0aec0', padding: 15 } },
-                        tooltip: { callbacks: { label: ctx => `${ctx.label}: ${formatCurrency(ctx.raw)}` } }
-                    }
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { position: 'right', labels: { color: '#a0aec0', padding: 12, font: { size: 11 } } } }
                 }
             });
         }
 
         function updateMonthlyTrendChart() {
-            const monthStats = {};
-            ordersData.forEach(row => {
-                const month = parseMonth(row.date || row.shippedDate);
-                if (!month) return;
-                if (!monthStats[month]) monthStats[month] = { revenue: 0, pl: 0 };
-                monthStats[month].revenue += parseNumber(row.revenue);
-                monthStats[month].pl += parseNumber(row.profitLoss);
+            const stats = {};
+            ordersData.forEach(r => {
+                const m = parseMonth(r['Requested Completion Date'] || r['Shipped Date']);
+                const status = (r['Work order Status'] || '').toLowerCase();
+                if (!m) return;
+                if (!stats[m]) stats[m] = { shipped: 0, forecast: 0 };
+                if (status === 'shipped') stats[m].shipped += parseNumber(r['P/L']);
+                else stats[m].forecast += parseNumber(r['P/L']);
             });
-
-            const sorted = Object.entries(monthStats).sort((a, b) => a[0].localeCompare(b[0]));
-
+            const months = Object.keys(stats).sort();
+            
             const ctx = document.getElementById('monthlyTrendChart');
             if (charts.monthlyTrend) charts.monthlyTrend.destroy();
-
             charts.monthlyTrend = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: sorted.map(([month]) => month),
+                    labels: months,
                     datasets: [
-                        { label: 'Revenue', data: sorted.map(([, stats]) => stats.revenue), borderColor: '#3182ce', backgroundColor: 'rgba(49,130,206,0.1)', fill: true, tension: 0.4 },
-                        { label: 'P/L', data: sorted.map(([, stats]) => stats.pl), borderColor: '#38a169', backgroundColor: 'rgba(56,161,105,0.1)', fill: true, tension: 0.4 }
+                        { label: 'Shipped', data: months.map(m => stats[m].shipped), borderColor: 'rgba(56,161,105,0.9)', backgroundColor: 'rgba(56,161,105,0.1)', fill: true, tension: 0.3 },
+                        { label: 'Forecasted', data: months.map(m => stats[m].forecast), borderColor: 'rgba(214,158,46,0.9)', backgroundColor: 'rgba(214,158,46,0.1)', fill: true, tension: 0.3, borderDash: [5,5] }
                     ]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { labels: { color: '#a0aec0' } }, tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${formatCurrency(ctx.raw)}` } } },
                     scales: {
                         y: { ticks: { callback: v => formatCurrency(v), color: '#a0aec0' }, grid: { color: '#4a5568' } },
-                        x: { ticks: { color: '#a0aec0' }, grid: { display: false } }
+                        x: { ticks: { color: '#a0aec0' }, grid: { color: 'rgba(255,255,255,0.05)' } }
                     }
                 }
             });
         }
 
-        function updateDateStackedChart() {
-            const monthlyData = {};
-            ordersData.forEach(row => {
-                const month = parseMonth(row.date || row.shippedDate);
-                const status = row.status || 'Unknown';
-                if (!month) return;
-                
-                if (!monthlyData[month]) monthlyData[month] = { shippedProfit: 0, shippedLoss: 0, forecastProfit: 0, forecastLoss: 0 };
-                
-                const pl = parseNumber(row.profitLoss);
-                const isShipped = status.toLowerCase() === 'shipped';
-                
-                if (isShipped) {
-                    if (pl >= 0) monthlyData[month].shippedProfit += pl;
-                    else monthlyData[month].shippedLoss += pl;
-                } else {
-                    if (pl >= 0) monthlyData[month].forecastProfit += pl;
-                    else monthlyData[month].forecastLoss += pl;
-                }
+        function updatePartsTable() {
+            const stats = {};
+            ordersData.forEach(r => {
+                const p = r['RT Part #'];
+                if (!stats[p]) stats[p] = { orders: 0, qty: 0, revenue: 0, pl: 0 };
+                stats[p].orders++;
+                stats[p].qty += parseNumber(r['Order Qty']);
+                stats[p].revenue += parseNumber(r['Revenue']);
+                stats[p].pl += parseNumber(r['P/L']);
             });
+            const sorted = Object.entries(stats).sort((a, b) => a[1].pl - b[1].pl);
+            const tbody = document.getElementById('partsTableBody');
+            tbody.innerHTML = sorted.map(([p, s]) => {
+                const margin = s.revenue ? ((s.pl / s.revenue) * 100).toFixed(2) : 0;
+                return `<tr><td>${p}</td><td>${s.orders}</td><td>${formatNumber(s.qty)}</td><td>${formatCurrency(s.revenue)}</td><td class="${s.pl>=0?'positive':'negative'}">${formatCurrency(s.pl)}</td><td class="${margin>=0?'positive':'negative'}">${margin}%</td></tr>`;
+            }).join('');
+            document.getElementById('partsSearch').oninput = e => { const f = e.target.value.toLowerCase(); Array.from(tbody.rows).forEach(r => r.style.display = r.cells[0].textContent.toLowerCase().includes(f) ? '' : 'none'); };
+        }
 
-            const months = Object.keys(monthlyData).sort();
+        function updateCustomersTable() {
+            const stats = {};
+            ordersData.forEach(r => {
+                const c = r['Customer'] || 'Unknown';
+                if (!stats[c]) stats[c] = { qty: 0, revenue: 0, pl: 0 };
+                stats[c].qty += parseNumber(r['Order Qty']);
+                stats[c].revenue += parseNumber(r['Revenue']);
+                stats[c].pl += parseNumber(r['P/L']);
+            });
+            const sorted = Object.entries(stats).sort((a, b) => a[1].pl - b[1].pl);
+            const tbody = document.getElementById('customersTableBody');
+            tbody.innerHTML = sorted.map(([c, s]) => {
+                const margin = s.revenue ? ((s.pl / s.revenue) * 100).toFixed(2) : 0;
+                return `<tr class="clickable" data-customer="${c}"><td class="clickable-cell">${c}</td><td>${formatNumber(s.qty)}</td><td class="${s.pl>=0?'positive':'negative'}">${formatCurrency(s.pl)}</td><td>${formatCurrency(s.revenue)}</td><td class="${margin>=0?'positive':'negative'}">${margin}%</td></tr>`;
+            }).join('');
+            tbody.querySelectorAll('tr.clickable').forEach(r => r.addEventListener('click', () => { tbody.querySelectorAll('tr').forEach(x => x.classList.remove('selected')); r.classList.add('selected'); showCustomerProducts(r.dataset.customer); }));
+            document.getElementById('customersSearch').oninput = e => { const f = e.target.value.toLowerCase(); Array.from(tbody.rows).forEach(r => r.style.display = r.cells[0].textContent.toLowerCase().includes(f) ? '' : 'none'); };
+        }
 
+        function showCustomerProducts(customer) {
+            selectedCustomer = customer;
+            const orders = ordersData.filter(r => r['Customer'] === customer);
+            const parts = {};
+            orders.forEach(o => {
+                const p = o['RT Part #'];
+                if (!parts[p]) parts[p] = { qty: 0, revenue: 0, pl: 0, orders: [], unitPrice: parseNumber(o['Unit Price']), varCost: parseNumber(o['Variable Cost']), totalCost: parseNumber(o['Total Cost']), contribution: o['Contribution Level'] };
+                parts[p].qty += parseNumber(o['Order Qty']);
+                parts[p].revenue += parseNumber(o['Revenue']);
+                parts[p].pl += parseNumber(o['P/L']);
+                parts[p].orders.push(o);
+            });
+            const totalQty = orders.reduce((s,o) => s + parseNumber(o['Order Qty']), 0);
+            const totalRev = orders.reduce((s,o) => s + parseNumber(o['Revenue']), 0);
+            const totalPL = orders.reduce((s,o) => s + parseNumber(o['P/L']), 0);
+            
+            document.getElementById('selectedCustomerTitle').textContent = `Customer: ${customer} | ${Object.keys(parts).length} products`;
+            document.getElementById('customerProductSummary').innerHTML = `
+                <div class="summary-item"><div class="label">Products</div><div class="value">${Object.keys(parts).length}</div></div>
+                <div class="summary-item"><div class="label">Total Qty</div><div class="value">${formatNumber(totalQty)}</div></div>
+                <div class="summary-item"><div class="label">Revenue</div><div class="value">${formatCurrency(totalRev)}</div></div>
+                <div class="summary-item"><div class="label">P/L</div><div class="value ${totalPL>=0?'positive':'negative'}">${formatCurrency(totalPL)}</div></div>`;
+            
+            const tbody = document.getElementById('customerProductTableBody');
+            const sorted = Object.entries(parts).sort((a,b) => a[1].pl - b[1].pl);
+            tbody.innerHTML = sorted.map(([p, s]) => {
+                const margin = s.revenue ? ((s.pl / s.revenue) * 100).toFixed(2) : 0;
+                return `<tr class="clickable" data-part="${p}"><td class="clickable-cell">${p}</td><td>${formatNumber(s.qty)}</td><td>${formatCurrency(s.unitPrice)}</td><td>${getContributionBadge(s.contribution)}</td><td>${formatCurrency(s.varCost)}</td><td>${formatCurrency(s.totalCost)}</td><td class="${margin>=0?'positive':'negative'}">${margin}%</td><td class="${s.pl>=0?'positive':'negative'}">${formatCurrency(s.pl)}</td><td>${formatCurrency(s.revenue)}</td></tr>`;
+            }).join('');
+            tbody.querySelectorAll('tr.clickable').forEach(r => r.addEventListener('click', () => { tbody.querySelectorAll('tr').forEach(x => x.classList.remove('selected')); r.classList.add('selected'); showPartOrders(r.dataset.part); }));
+            
+            document.getElementById('customerProductBreakdown').classList.add('active');
+            document.getElementById('customerPartOrders').classList.remove('active');
+            document.getElementById('customerProductBreakdown').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showPartOrders(part) {
+            selectedPart = part;
+            const orders = ordersData.filter(r => r['Customer'] === selectedCustomer && r['RT Part #'] === part);
+            const totalQty = orders.reduce((s,o) => s + parseNumber(o['Order Qty']), 0);
+            const totalRev = orders.reduce((s,o) => s + parseNumber(o['Revenue']), 0);
+            const totalPL = orders.reduce((s,o) => s + parseNumber(o['P/L']), 0);
+            
+            document.getElementById('bc2Customer').textContent = selectedCustomer;
+            document.getElementById('bc2Part').textContent = part;
+            document.getElementById('partOrdersTitle').textContent = `${orders.length} orders for ${part}`;
+            document.getElementById('partOrdersSummary').innerHTML = `
+                <div class="summary-item"><div class="label">Orders</div><div class="value">${orders.length}</div></div>
+                <div class="summary-item"><div class="label">Total Qty</div><div class="value">${formatNumber(totalQty)}</div></div>
+                <div class="summary-item"><div class="label">Revenue</div><div class="value">${formatCurrency(totalRev)}</div></div>
+                <div class="summary-item"><div class="label">P/L</div><div class="value ${totalPL>=0?'positive':'negative'}">${formatCurrency(totalPL)}</div></div>`;
+            
+            const tbody = document.getElementById('partOrdersTableBody');
+            tbody.innerHTML = orders.map(o => {
+                const pl = parseNumber(o['P/L']);
+                const ppp = parseNumber(o['Profit per part']);
+                return `<tr><td>${o['PO #'] || '-'}</td><td>${getStatusBadge(o['Work order Status'])}</td><td>${formatNumber(parseNumber(o['Order Qty']))}</td><td>${formatCurrency(parseNumber(o['Unit Price']))}</td><td>${getContributionBadge(o['Contribution Level'])}</td><td>${formatCurrency(parseNumber(o['Variable Cost']))}</td><td>${formatCurrency(parseNumber(o['Total Cost']))}</td><td class="${ppp>=0?'positive':'negative'}">${formatCurrency(ppp)}</td><td class="${pl>=0?'positive':'negative'}">${formatCurrency(pl)}</td><td>${formatCurrency(parseNumber(o['Revenue']))}</td><td>${o['Shipped Date'] || o['Requested Completion Date'] || '-'}</td></tr>`;
+            }).join('');
+            
+            document.getElementById('customerPartOrders').classList.add('active');
+            document.getElementById('customerPartOrders').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function closeCustomerDrilldown() { document.getElementById('customerProductBreakdown').classList.remove('active'); document.getElementById('customerPartOrders').classList.remove('active'); selectedCustomer = null; selectedPart = null; document.querySelectorAll('#customersTableBody tr').forEach(r => r.classList.remove('selected')); }
+        function backToProducts() { document.getElementById('customerPartOrders').classList.remove('active'); selectedPart = null; document.querySelectorAll('#customerProductTableBody tr').forEach(r => r.classList.remove('selected')); document.getElementById('customerProductBreakdown').scrollIntoView({ behavior: 'smooth' }); }
+        function closeAllCustomerDrilldowns() { closeCustomerDrilldown(); }
+
+        // Date Analysis
+        function updateDateStackedChart() {
+            const stats = {};
+            ordersData.forEach(r => {
+                const m = parseMonth(r['Requested Completion Date'] || r['Shipped Date']);
+                const status = (r['Work order Status'] || '').toLowerCase();
+                const pl = parseNumber(r['P/L']);
+                if (!m) return;
+                if (!stats[m]) stats[m] = { sp: 0, sl: 0, fp: 0, fl: 0 };
+                if (status === 'shipped') { if (pl >= 0) stats[m].sp += pl; else stats[m].sl += pl; }
+                else { if (pl >= 0) stats[m].fp += pl; else stats[m].fl += pl; }
+            });
+            const months = Object.keys(stats).sort();
+            
             const ctx = document.getElementById('dateStackedChart');
             if (charts.dateStacked) charts.dateStacked.destroy();
-
             charts.dateStacked = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: months,
                     datasets: [
-                        { label: 'Shipped Profit', data: months.map(m => monthlyData[m].shippedProfit), backgroundColor: 'rgba(56,161,105,0.9)', borderRadius: 4, stack: 'shipped' },
-                        { label: 'Shipped Loss', data: months.map(m => monthlyData[m].shippedLoss), backgroundColor: 'rgba(229,62,62,0.9)', borderRadius: 4, stack: 'shipped' },
-                        { label: 'Forecast Profit', data: months.map(m => monthlyData[m].forecastProfit), backgroundColor: 'rgba(104,211,145,0.7)', borderRadius: 4, stack: 'forecast' },
-                        { label: 'Forecast Loss', data: months.map(m => monthlyData[m].forecastLoss), backgroundColor: 'rgba(252,129,129,0.7)', borderRadius: 4, stack: 'forecast' }
+                        { label: 'Shipped Profit', data: months.map(m => stats[m].sp), backgroundColor: 'rgba(56,161,105,0.9)', stack: 's', borderRadius: 3 },
+                        { label: 'Shipped Loss', data: months.map(m => stats[m].sl), backgroundColor: 'rgba(229,62,62,0.9)', stack: 's', borderRadius: 3 },
+                        { label: 'Forecast Profit', data: months.map(m => stats[m].fp), backgroundColor: 'rgba(104,211,145,0.7)', stack: 'f', borderRadius: 3 },
+                        { label: 'Forecast Loss', data: months.map(m => stats[m].fl), backgroundColor: 'rgba(252,129,129,0.7)', stack: 'f', borderRadius: 3 }
                     ]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    onClick: (e, elements) => { if (elements.length > 0) showMonthlyBreakdown(months[elements[0].index]); },
+                    responsive: true, maintainAspectRatio: false,
+                    onClick: (e, el) => { if (el.length > 0) showMonthBreakdown(months[el[0].index]); },
                     plugins: { legend: { labels: { color: '#a0aec0' } }, tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${formatCurrency(ctx.raw)}` } } },
                     scales: {
                         x: { stacked: true, ticks: { color: '#a0aec0' }, grid: { display: false } },
@@ -1018,375 +861,93 @@
             });
         }
 
-        function updatePartsTable() {
-            const partStats = {};
-            ordersData.forEach(row => {
-                const part = row.partNumber;
-                if (!part) return;
-                if (!partStats[part]) partStats[part] = { revenue: 0, pl: 0, qty: 0, orders: 0 };
-                partStats[part].revenue += parseNumber(row.revenue);
-                partStats[part].pl += parseNumber(row.profitLoss);
-                partStats[part].qty += parseNumber(row.quantity);
-                partStats[part].orders++;
-            });
-
-            const sorted = Object.entries(partStats).sort((a, b) => b[1].pl - a[1].pl);
-            const tbody = document.getElementById('partsTableBody');
-            
-            tbody.innerHTML = sorted.map(([part, stats]) => {
-                const margin = stats.revenue ? ((stats.pl / stats.revenue) * 100).toFixed(2) : 0;
-                return `<tr>
-                    <td>${part}</td>
-                    <td>${stats.orders}</td>
-                    <td>${formatNumber(stats.qty)}</td>
-                    <td>${formatCurrency(stats.revenue)}</td>
-                    <td class="${stats.pl >= 0 ? 'positive' : 'negative'}">${formatCurrency(stats.pl)}</td>
-                    <td class="${margin >= 0 ? 'positive' : 'negative'}">${margin}%</td>
-                </tr>`;
-            }).join('');
-
-            document.getElementById('partsSearch').oninput = (e) => {
-                const filter = e.target.value.toLowerCase();
-                Array.from(tbody.rows).forEach(row => {
-                    row.style.display = row.cells[0].textContent.toLowerCase().includes(filter) ? '' : 'none';
-                });
-            };
-        }
-
-        // ===== CUSTOMER ANALYSIS =====
-        function updateCustomersTable() {
-            const customerStats = {};
-            ordersData.forEach(row => {
-                const customer = row.customer || 'Unknown';
-                if (!customerStats[customer]) customerStats[customer] = { revenue: 0, pl: 0, qty: 0 };
-                customerStats[customer].revenue += parseNumber(row.revenue);
-                customerStats[customer].pl += parseNumber(row.profitLoss);
-                customerStats[customer].qty += parseNumber(row.quantity);
-            });
-
-            const sorted = Object.entries(customerStats).sort((a, b) => b[1].pl - a[1].pl);
-            const tbody = document.getElementById('customersTableBody');
-            
-            tbody.innerHTML = sorted.map(([customer, stats]) => {
-                const margin = stats.revenue ? ((stats.pl / stats.revenue) * 100).toFixed(2) : 0;
-                return `<tr class="clickable" data-customer="${customer}">
-                    <td class="clickable-cell">${customer}</td>
-                    <td>${formatNumber(stats.qty)}</td>
-                    <td class="${stats.pl >= 0 ? 'positive' : 'negative'}">${formatCurrency(stats.pl)}</td>
-                    <td>${formatCurrency(stats.revenue)}</td>
-                    <td class="${margin >= 0 ? 'positive' : 'negative'}">${margin}%</td>
-                </tr>`;
-            }).join('');
-
-            tbody.querySelectorAll('tr.clickable').forEach(row => {
-                row.addEventListener('click', () => {
-                    tbody.querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
-                    row.classList.add('selected');
-                    showCustomerProductBreakdown(row.dataset.customer);
-                });
-            });
-
-            document.getElementById('customersSearch').oninput = (e) => {
-                const filter = e.target.value.toLowerCase();
-                Array.from(tbody.rows).forEach(row => {
-                    row.style.display = row.cells[0].textContent.toLowerCase().includes(filter) ? '' : 'none';
-                });
-            };
-        }
-
-        // Level 2: Show products for a customer (consolidated by part number)
-        function showCustomerProductBreakdown(customer) {
-            selectedCustomer = customer;
-            const customerOrders = ordersData.filter(row => row.customer === customer);
-            
-            // Consolidate by part number
-            const partStats = {};
-            customerOrders.forEach(o => {
-                const part = o.partNumber;
-                if (!partStats[part]) {
-                    partStats[part] = {
-                        qty: 0,
-                        revenue: 0,
-                        pl: 0,
-                        orders: [],
-                        // Take first values for display (will be weighted avg later)
-                        unitPrice: parseNumber(o.unitPrice),
-                        variableCost: parseNumber(o.variableCost),
-                        totalCost: parseNumber(o.totalCost),
-                        contributionLevel: o.contributionLevel
-                    };
-                }
-                partStats[part].qty += parseNumber(o.quantity);
-                partStats[part].revenue += parseNumber(o.revenue);
-                partStats[part].pl += parseNumber(o.profitLoss);
-                partStats[part].orders.push(o);
-            });
-            
-            const productCount = Object.keys(partStats).length;
-            const totalQty = customerOrders.reduce((sum, o) => sum + parseNumber(o.quantity), 0);
-            const totalRevenue = customerOrders.reduce((sum, o) => sum + parseNumber(o.revenue), 0);
-            const totalPL = customerOrders.reduce((sum, o) => sum + parseNumber(o.profitLoss), 0);
-            
-            document.getElementById('selectedCustomerTitle').textContent = `Customer: ${customer} | ${productCount} products`;
-            document.getElementById('customerProductSummary').innerHTML = `
-                <div class="summary-item"><div class="label">Products</div><div class="value">${productCount}</div></div>
-                <div class="summary-item"><div class="label">Total Qty</div><div class="value">${formatNumber(totalQty)}</div></div>
-                <div class="summary-item"><div class="label">Revenue</div><div class="value">${formatCurrency(totalRevenue)}</div></div>
-                <div class="summary-item"><div class="label">P/L</div><div class="value ${totalPL >= 0 ? 'positive' : 'negative'}">${formatCurrency(totalPL)}</div></div>
-            `;
-            
-            const tbody = document.getElementById('customerProductTableBody');
-            const sortedParts = Object.entries(partStats).sort((a, b) => a[1].pl - b[1].pl);
-            
-            tbody.innerHTML = sortedParts.map(([part, stats]) => {
-                const margin = stats.revenue ? ((stats.pl / stats.revenue) * 100).toFixed(2) : 0;
-                return `<tr class="clickable" data-part="${part}">
-                    <td class="clickable-cell">${part}</td>
-                    <td>${formatNumber(stats.qty)}</td>
-                    <td>${formatCurrency(stats.unitPrice)}</td>
-                    <td>${getContributionBadge(stats.contributionLevel)}</td>
-                    <td>${formatCurrency(stats.variableCost)}</td>
-                    <td>${formatCurrency(stats.totalCost)}</td>
-                    <td class="${margin >= 0 ? 'positive' : 'negative'}">${margin}%</td>
-                    <td class="${stats.pl >= 0 ? 'positive' : 'negative'}">${formatCurrency(stats.pl)}</td>
-                    <td>${formatCurrency(stats.revenue)}</td>
-                </tr>`;
-            }).join('');
-            
-            // Add click handler for Level 3 drill-down
-            tbody.querySelectorAll('tr.clickable').forEach(row => {
-                row.addEventListener('click', () => {
-                    tbody.querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
-                    row.classList.add('selected');
-                    showPartOrderDetails(row.dataset.part);
-                });
-            });
-            
-            document.getElementById('customerProductBreakdown').classList.add('active');
-            document.getElementById('customerPartOrderDetails').classList.remove('active');
-            document.getElementById('customerProductBreakdown').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        // Level 3: Show individual orders for a part (within selected customer)
-        function showPartOrderDetails(part) {
-            selectedPart = part;
-            const orders = ordersData.filter(row => row.customer === selectedCustomer && row.partNumber === part);
-            
-            const totalQty = orders.reduce((sum, o) => sum + parseNumber(o.quantity), 0);
-            const totalRevenue = orders.reduce((sum, o) => sum + parseNumber(o.revenue), 0);
-            const totalPL = orders.reduce((sum, o) => sum + parseNumber(o.profitLoss), 0);
-            
-            document.getElementById('breadcrumbCustomer2').textContent = selectedCustomer;
-            document.getElementById('breadcrumbPart').textContent = part;
-            document.getElementById('partOrderDetailsTitle').textContent = `${orders.length} orders for ${part}`;
-            document.getElementById('partOrderSummary').innerHTML = `
-                <div class="summary-item"><div class="label">Orders</div><div class="value">${orders.length}</div></div>
-                <div class="summary-item"><div class="label">Total Qty</div><div class="value">${formatNumber(totalQty)}</div></div>
-                <div class="summary-item"><div class="label">Revenue</div><div class="value">${formatCurrency(totalRevenue)}</div></div>
-                <div class="summary-item"><div class="label">P/L</div><div class="value ${totalPL >= 0 ? 'positive' : 'negative'}">${formatCurrency(totalPL)}</div></div>
-            `;
-            
-            const tbody = document.getElementById('partOrderTableBody');
-            tbody.innerHTML = orders.map(o => {
-                const pl = parseNumber(o.profitLoss);
-                const profitPerPart = parseNumber(o.profitPerPart);
-                const date = o.shippedDate || o.date || '';
-                return `<tr>
-                    <td>${o.poNumber || '-'}</td>
-                    <td><span class="badge ${(o.status || '').toLowerCase() === 'shipped' ? 'shipped' : 'forecast'}">${o.status || 'Unknown'}</span></td>
-                    <td>${formatNumber(parseNumber(o.quantity))}</td>
-                    <td>${formatCurrency(parseNumber(o.unitPrice))}</td>
-                    <td>${getContributionBadge(o.contributionLevel)}</td>
-                    <td>${formatCurrency(parseNumber(o.variableCost))}</td>
-                    <td>${formatCurrency(parseNumber(o.totalCost))}</td>
-                    <td class="${profitPerPart >= 0 ? 'positive' : 'negative'}">${formatCurrency(profitPerPart)}</td>
-                    <td class="${pl >= 0 ? 'positive' : 'negative'}">${formatCurrency(pl)}</td>
-                    <td>${formatCurrency(parseNumber(o.revenue))}</td>
-                    <td>${date}</td>
-                </tr>`;
-            }).join('');
-            
-            document.getElementById('customerPartOrderDetails').classList.add('active');
-            document.getElementById('customerPartOrderDetails').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        function closeCustomerProductDrilldown() {
-            document.getElementById('customerProductBreakdown').classList.remove('active');
-            document.getElementById('customerPartOrderDetails').classList.remove('active');
-            selectedCustomer = null;
-            selectedPart = null;
-            document.querySelectorAll('#customersTableBody tr').forEach(r => r.classList.remove('selected'));
-        }
-
-        function backToProductBreakdown() {
-            document.getElementById('customerPartOrderDetails').classList.remove('active');
-            selectedPart = null;
-            document.querySelectorAll('#customerProductTableBody tr').forEach(r => r.classList.remove('selected'));
-            document.getElementById('customerProductBreakdown').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        function closePartOrderDrilldown() {
-            document.getElementById('customerProductBreakdown').classList.remove('active');
-            document.getElementById('customerPartOrderDetails').classList.remove('active');
-            selectedCustomer = null;
-            selectedPart = null;
-            document.querySelectorAll('#customersTableBody tr').forEach(r => r.classList.remove('selected'));
-        }
-
-        // ===== DATE ANALYSIS =====
         function updateDatesTable() {
-            const monthStats = {};
-            ordersData.forEach(row => {
-                const month = parseMonth(row.date || row.shippedDate);
-                const status = row.status || 'Unknown';
-                if (!month) return;
-                
-                const key = `${month}|${status}`;
-                if (!monthStats[key]) monthStats[key] = { month, status, revenue: 0, pl: 0, qty: 0, orders: 0 };
-                monthStats[key].revenue += parseNumber(row.revenue);
-                monthStats[key].pl += parseNumber(row.profitLoss);
-                monthStats[key].qty += parseNumber(row.quantity);
-                monthStats[key].orders++;
+            const stats = {};
+            ordersData.forEach(r => {
+                const m = parseMonth(r['Requested Completion Date'] || r['Shipped Date']);
+                const status = r['Work order Status'] || 'Unknown';
+                if (!m) return;
+                const key = `${m}|${status}`;
+                if (!stats[key]) stats[key] = { month: m, status, orders: 0, qty: 0, revenue: 0, pl: 0 };
+                stats[key].orders++;
+                stats[key].qty += parseNumber(r['Order Qty']);
+                stats[key].revenue += parseNumber(r['Revenue']);
+                stats[key].pl += parseNumber(r['P/L']);
             });
-
-            const sorted = Object.values(monthStats).sort((a, b) => b.month.localeCompare(a.month));
+            const sorted = Object.values(stats).sort((a, b) => b.month.localeCompare(a.month));
             const tbody = document.getElementById('datesTableBody');
-            
-            tbody.innerHTML = sorted.map(stats => {
-                return `<tr class="clickable" data-month="${stats.month}">
-                    <td>${stats.month}</td>
-                    <td><span class="badge ${stats.status.toLowerCase() === 'shipped' ? 'shipped' : 'forecast'}">${stats.status}</span></td>
-                    <td>${stats.orders}</td>
-                    <td>${formatNumber(stats.qty)}</td>
-                    <td>${formatCurrency(stats.revenue)}</td>
-                    <td class="${stats.pl >= 0 ? 'positive' : 'negative'}">${formatCurrency(stats.pl)}</td>
-                </tr>`;
-            }).join('');
-
-            tbody.querySelectorAll('tr.clickable').forEach(row => {
-                row.addEventListener('click', () => {
-                    tbody.querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
-                    row.classList.add('selected');
-                    showMonthlyBreakdown(row.dataset.month);
-                });
-            });
+            tbody.innerHTML = sorted.map(s => `<tr class="clickable" data-month="${s.month}"><td>${s.month}</td><td>${getStatusBadge(s.status)}</td><td>${s.orders}</td><td>${formatNumber(s.qty)}</td><td>${formatCurrency(s.revenue)}</td><td class="${s.pl>=0?'positive':'negative'}">${formatCurrency(s.pl)}</td></tr>`).join('');
+            tbody.querySelectorAll('tr.clickable').forEach(r => r.addEventListener('click', () => { tbody.querySelectorAll('tr').forEach(x => x.classList.remove('selected')); r.classList.add('selected'); showMonthBreakdown(r.dataset.month); }));
         }
 
-        function showMonthlyBreakdown(month) {
+        function showMonthBreakdown(month) {
             selectedMonth = month;
-            
-            const monthOrders = ordersData.filter(row => parseMonth(row.date || row.shippedDate) === month);
-            
-            const customerData = {};
-            monthOrders.forEach(o => {
-                const customer = o.customer || 'Unknown';
-                if (!customerData[customer]) customerData[customer] = { orders: 0, qty: 0, revenue: 0, pl: 0 };
-                customerData[customer].orders++;
-                customerData[customer].qty += parseNumber(o.quantity);
-                customerData[customer].revenue += parseNumber(o.revenue);
-                customerData[customer].pl += parseNumber(o.profitLoss);
+            const orders = ordersData.filter(r => parseMonth(r['Requested Completion Date'] || r['Shipped Date']) === month);
+            const customers = {};
+            orders.forEach(o => {
+                const c = o['Customer'] || 'Unknown';
+                if (!customers[c]) customers[c] = { orders: 0, qty: 0, revenue: 0, pl: 0 };
+                customers[c].orders++;
+                customers[c].qty += parseNumber(o['Order Qty']);
+                customers[c].revenue += parseNumber(o['Revenue']);
+                customers[c].pl += parseNumber(o['P/L']);
             });
+            const totalQty = orders.reduce((s,o) => s + parseNumber(o['Order Qty']), 0);
+            const totalRev = orders.reduce((s,o) => s + parseNumber(o['Revenue']), 0);
+            const totalPL = orders.reduce((s,o) => s + parseNumber(o['P/L']), 0);
             
-            const totalOrders = monthOrders.length;
-            const totalQty = monthOrders.reduce((sum, o) => sum + parseNumber(o.quantity), 0);
-            const totalRevenue = monthOrders.reduce((sum, o) => sum + parseNumber(o.revenue), 0);
-            const totalPL = monthOrders.reduce((sum, o) => sum + parseNumber(o.profitLoss), 0);
-            
-            document.getElementById('selectedMonthTitle').textContent = `Period: ${month} | ${totalOrders} orders`;
-            document.getElementById('monthSummary').innerHTML = `
-                <div class="summary-item"><div class="label">Orders</div><div class="value">${totalOrders}</div></div>
-                <div class="summary-item"><div class="label">Total Qty</div><div class="value">${formatNumber(totalQty)}</div></div>
-                <div class="summary-item"><div class="label">Revenue</div><div class="value">${formatCurrency(totalRevenue)}</div></div>
-                <div class="summary-item"><div class="label">P/L</div><div class="value ${totalPL >= 0 ? 'positive' : 'negative'}">${formatCurrency(totalPL)}</div></div>
-            `;
-            
-            const customerArray = Object.entries(customerData).map(([name, data]) => ({ name, ...data })).sort((a, b) => a.pl - b.pl);
-            const tbody = document.getElementById('monthlyCustomerTableBody');
-            tbody.innerHTML = customerArray.map(c => {
-                const margin = c.revenue ? ((c.pl / c.revenue) * 100).toFixed(2) : 0;
-                return `<tr class="clickable" data-customer="${c.name}">
-                    <td class="clickable-cell">${c.name}</td>
-                    <td>${c.orders}</td>
-                    <td>${formatNumber(c.qty)}</td>
-                    <td>${formatCurrency(c.revenue)}</td>
-                    <td class="${c.pl >= 0 ? 'positive' : 'negative'}">${formatCurrency(c.pl)}</td>
-                    <td class="${margin >= 0 ? 'positive' : 'negative'}">${margin}%</td>
-                </tr>`;
-            }).join('');
-            
-            tbody.querySelectorAll('tr.clickable').forEach(row => {
-                row.addEventListener('click', () => {
-                    tbody.querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
-                    row.classList.add('selected');
-                    showCustomerOrderDetails(row.dataset.customer);
-                });
-            });
-            
-            document.getElementById('monthlyCustomerBreakdown').classList.add('active');
-            document.getElementById('customerOrderDetails').classList.remove('active');
-            document.getElementById('monthlyCustomerBreakdown').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        function showCustomerOrderDetails(customer) {
-            const orders = ordersData.filter(row => parseMonth(row.date || row.shippedDate) === selectedMonth && row.customer === customer);
-            
-            const totalQty = orders.reduce((sum, o) => sum + parseNumber(o.quantity), 0);
-            const totalRevenue = orders.reduce((sum, o) => sum + parseNumber(o.revenue), 0);
-            const totalPL = orders.reduce((sum, o) => sum + parseNumber(o.profitLoss), 0);
-            
-            document.getElementById('breadcrumbMonth').textContent = selectedMonth;
-            document.getElementById('breadcrumbCustomer').textContent = customer;
-            document.getElementById('orderDetailsTitle').textContent = `${orders.length} orders for ${customer}`;
-            document.getElementById('customerOrderSummary').innerHTML = `
+            document.getElementById('monthDrilldownTitle').textContent = `Period: ${month} | ${orders.length} orders`;
+            document.getElementById('monthDrilldownSummary').innerHTML = `
                 <div class="summary-item"><div class="label">Orders</div><div class="value">${orders.length}</div></div>
                 <div class="summary-item"><div class="label">Total Qty</div><div class="value">${formatNumber(totalQty)}</div></div>
-                <div class="summary-item"><div class="label">Revenue</div><div class="value">${formatCurrency(totalRevenue)}</div></div>
-                <div class="summary-item"><div class="label">P/L</div><div class="value ${totalPL >= 0 ? 'positive' : 'negative'}">${formatCurrency(totalPL)}</div></div>
-            `;
+                <div class="summary-item"><div class="label">Revenue</div><div class="value">${formatCurrency(totalRev)}</div></div>
+                <div class="summary-item"><div class="label">P/L</div><div class="value ${totalPL>=0?'positive':'negative'}">${formatCurrency(totalPL)}</div></div>`;
             
-            const tbody = document.getElementById('customerOrderTableBody');
+            const tbody = document.getElementById('monthCustomersTableBody');
+            const sorted = Object.entries(customers).sort((a,b) => a[1].pl - b[1].pl);
+            tbody.innerHTML = sorted.map(([c, s]) => {
+                const margin = s.revenue ? ((s.pl / s.revenue) * 100).toFixed(2) : 0;
+                return `<tr class="clickable" data-customer="${c}"><td class="clickable-cell">${c}</td><td>${s.orders}</td><td>${formatNumber(s.qty)}</td><td>${formatCurrency(s.revenue)}</td><td class="${s.pl>=0?'positive':'negative'}">${formatCurrency(s.pl)}</td><td class="${margin>=0?'positive':'negative'}">${margin}%</td></tr>`;
+            }).join('');
+            tbody.querySelectorAll('tr.clickable').forEach(r => r.addEventListener('click', () => { tbody.querySelectorAll('tr').forEach(x => x.classList.remove('selected')); r.classList.add('selected'); showMonthCustomerOrders(r.dataset.customer); }));
+            
+            document.getElementById('monthlyDrilldown').classList.add('active');
+            document.getElementById('monthCustomerOrders').classList.remove('active');
+            document.getElementById('monthlyDrilldown').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showMonthCustomerOrders(customer) {
+            const orders = ordersData.filter(r => parseMonth(r['Requested Completion Date'] || r['Shipped Date']) === selectedMonth && r['Customer'] === customer);
+            const totalQty = orders.reduce((s,o) => s + parseNumber(o['Order Qty']), 0);
+            const totalRev = orders.reduce((s,o) => s + parseNumber(o['Revenue']), 0);
+            const totalPL = orders.reduce((s,o) => s + parseNumber(o['P/L']), 0);
+            
+            document.getElementById('bcMonth').textContent = selectedMonth;
+            document.getElementById('bcCustomer').textContent = customer;
+            document.getElementById('monthCustomerTitle').textContent = `${orders.length} orders for ${customer}`;
+            document.getElementById('monthCustomerSummary').innerHTML = `
+                <div class="summary-item"><div class="label">Orders</div><div class="value">${orders.length}</div></div>
+                <div class="summary-item"><div class="label">Total Qty</div><div class="value">${formatNumber(totalQty)}</div></div>
+                <div class="summary-item"><div class="label">Revenue</div><div class="value">${formatCurrency(totalRev)}</div></div>
+                <div class="summary-item"><div class="label">P/L</div><div class="value ${totalPL>=0?'positive':'negative'}">${formatCurrency(totalPL)}</div></div>`;
+            
+            const tbody = document.getElementById('monthCustomerOrdersBody');
             tbody.innerHTML = orders.map(o => {
-                const pl = parseNumber(o.profitLoss);
-                return `<tr>
-                    <td>${o.partNumber}</td>
-                    <td>${o.poNumber || '-'}</td>
-                    <td><span class="badge ${(o.status || '').toLowerCase() === 'shipped' ? 'shipped' : 'forecast'}">${o.status || 'Unknown'}</span></td>
-                    <td>${formatNumber(parseNumber(o.quantity))}</td>
-                    <td>${formatCurrency(parseNumber(o.unitPrice))}</td>
-                    <td class="${parseNumber(o.profitPerPart) >= 0 ? 'positive' : 'negative'}">${formatCurrency(parseNumber(o.profitPerPart))}</td>
-                    <td class="${pl >= 0 ? 'positive' : 'negative'}">${formatCurrency(pl)}</td>
-                    <td>${formatCurrency(parseNumber(o.revenue))}</td>
-                </tr>`;
+                const pl = parseNumber(o['P/L']);
+                const ppp = parseNumber(o['Profit per part']);
+                return `<tr><td>${o['RT Part #']}</td><td>${o['PO #'] || '-'}</td><td>${getStatusBadge(o['Work order Status'])}</td><td>${formatNumber(parseNumber(o['Order Qty']))}</td><td>${formatCurrency(parseNumber(o['Unit Price']))}</td><td class="${ppp>=0?'positive':'negative'}">${formatCurrency(ppp)}</td><td class="${pl>=0?'positive':'negative'}">${formatCurrency(pl)}</td><td>${formatCurrency(parseNumber(o['Revenue']))}</td></tr>`;
             }).join('');
             
-            document.getElementById('customerOrderDetails').classList.add('active');
-            document.getElementById('customerOrderDetails').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.getElementById('monthCustomerOrders').classList.add('active');
+            document.getElementById('monthCustomerOrders').scrollIntoView({ behavior: 'smooth' });
         }
 
-        function closeMonthlyDrilldown() {
-            document.getElementById('monthlyCustomerBreakdown').classList.remove('active');
-            document.getElementById('customerOrderDetails').classList.remove('active');
-            selectedMonth = null;
-            document.querySelectorAll('#datesTableBody tr').forEach(r => r.classList.remove('selected'));
-        }
+        function closeMonthDrilldown() { document.getElementById('monthlyDrilldown').classList.remove('active'); document.getElementById('monthCustomerOrders').classList.remove('active'); selectedMonth = null; document.querySelectorAll('#datesTableBody tr').forEach(r => r.classList.remove('selected')); }
+        function backToMonthCustomers() { document.getElementById('monthCustomerOrders').classList.remove('active'); document.querySelectorAll('#monthCustomersTableBody tr').forEach(r => r.classList.remove('selected')); document.getElementById('monthlyDrilldown').scrollIntoView({ behavior: 'smooth' }); }
+        function closeAllDateDrilldowns() { closeMonthDrilldown(); }
 
-        function closeCustomerOrderDrilldown() {
-            document.getElementById('customerOrderDetails').classList.remove('active');
-            document.querySelectorAll('#monthlyCustomerTableBody tr').forEach(r => r.classList.remove('selected'));
-        }
-
-        function backToMonthlyBreakdown() {
-            document.getElementById('customerOrderDetails').classList.remove('active');
-            document.querySelectorAll('#monthlyCustomerTableBody tr').forEach(r => r.classList.remove('selected'));
-            document.getElementById('monthlyCustomerBreakdown').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        // ===== BOM EXPLORER =====
-        function initBomExplorer() {
-            renderBomSelector();
-            document.getElementById('bomSearch').oninput = (e) => renderBomSelector(e.target.value.toLowerCase());
-        }
-
+        // BOM Explorer
+        function initBomExplorer() { renderBomSelector(); document.getElementById('bomSearch').oninput = e => renderBomSelector(e.target.value.toLowerCase()); }
         function switchBomTab(tab) {
             currentBomTab = tab;
             document.querySelectorAll('.tab[data-bomtab]').forEach(t => t.classList.toggle('active', t.dataset.bomtab === tab));
@@ -1395,47 +956,112 @@
             document.getElementById('bomCategory').textContent = '';
             document.getElementById('bomContent').innerHTML = '<p style="color:var(--text-secondary);">Click on a part from the list to view details.</p>';
         }
-
         function renderBomSelector(filter = '') {
+            const data = currentBomTab === 'final' ? bomFinalData : currentBomTab === 'sub' ? bomSubData : bomIndividualData;
             const selector = document.getElementById('bomSelector');
-            let data = currentBomTab === 'final' ? bomFinalData : currentBomTab === 'sub' ? bomSubData : bomIndividualData;
+            if (!data || data.length === 0) { selector.innerHTML = '<p style="color:var(--text-secondary);">No BOM data available.</p>'; return; }
             
-            if (!data || data.length === 0) {
-                selector.innerHTML = '<p style="color:var(--text-secondary);">No BOM data available.</p>';
-                return;
-            }
-            
+            // Get part name column (handle trailing space)
+            const nameKey = Object.keys(data[0]).find(k => k.trim().toLowerCase() === 'part name') || 'Part name';
             const filtered = data.filter(d => {
-                const name = (d.partName || '').toLowerCase();
-                const cat = (d.category || '').toLowerCase();
-                return name.includes(filter) || cat.includes(filter);
+                const name = (d[nameKey] || '').toLowerCase();
+                return name.includes(filter);
             });
-            
-            selector.innerHTML = filtered.map((d, i) => `<div class="bom-item" data-index="${i}" onclick="showBomDetails(${i})">${d.partName || 'Unknown'}</div>`).join('');
+            selector.innerHTML = filtered.map((d, i) => `<div class="bom-item" data-index="${i}" onclick="showBomDetails(${i})">${d[nameKey] || 'Unknown'}</div>`).join('');
         }
-
+        
         function showBomDetails(index) {
-            let data = currentBomTab === 'final' ? bomFinalData : currentBomTab === 'sub' ? bomSubData : bomIndividualData;
+            const data = currentBomTab === 'final' ? bomFinalData : currentBomTab === 'sub' ? bomSubData : bomIndividualData;
             const part = data[index];
             if (!part) return;
             
             document.querySelectorAll('.bom-item').forEach((item, i) => item.classList.toggle('selected', i === index));
             
-            document.getElementById('bomPartName').textContent = part.partName || 'Unknown';
-            document.getElementById('bomCategory').textContent = part.category || '';
+            const nameKey = Object.keys(part).find(k => k.trim().toLowerCase() === 'part name') || 'Part name';
+            const catKey = Object.keys(part).find(k => k.trim().toLowerCase() === 'category');
             
-            let content = '<div class="bom-section"><h4>Details</h4><div class="cost-breakdown">';
-            Object.entries(part).forEach(([key, value]) => {
-                if (value && key !== 'partName' && key !== 'category') {
-                    content += `<div class="cost-item"><span class="label">${key}</span><span>${value}</span></div>`;
+            document.getElementById('bomPartName').textContent = part[nameKey] || 'Unknown';
+            document.getElementById('bomCategory').textContent = catKey ? (part[catKey] || '') : '';
+            
+            let content = '';
+            
+            if (currentBomTab === 'individual') {
+                // Individual Items: Description, Cost, Supplier
+                content = `<div class="bom-section"><h4>Item Details</h4><div class="cost-breakdown">`;
+                const descKey = Object.keys(part).find(k => k.trim().toLowerCase() === 'description');
+                const costKey = Object.keys(part).find(k => k.trim().toLowerCase().includes('cost'));
+                const suppKey = Object.keys(part).find(k => k.trim().toLowerCase() === 'supplier');
+                if (descKey && part[descKey]) content += `<div class="cost-item"><span class="label">Description</span><span class="value">${part[descKey]}</span></div>`;
+                if (costKey && part[costKey]) content += `<div class="cost-item"><span class="label">Cost per lb/part</span><span class="value">${formatCurrency(parseNumber(part[costKey]))}</span></div>`;
+                if (suppKey && part[suppKey]) content += `<div class="cost-item"><span class="label">Supplier</span><span class="value">${part[suppKey]}</span></div>`;
+                content += `</div></div>`;
+            } else if (currentBomTab === 'sub') {
+                // Sub Assembly: Mold, Components, Costs
+                content = `<div class="bom-section"><h4>Assembly Info</h4><div class="cost-breakdown">`;
+                const moldKey = Object.keys(part).find(k => k.trim().toLowerCase().includes('mold'));
+                const weightKey = Object.keys(part).find(k => k.trim().toLowerCase().includes('weight'));
+                const laborKey = Object.keys(part).find(k => k.trim().toLowerCase().includes('labor cost/ part'));
+                const overheadKey = Object.keys(part).find(k => k.trim().toLowerCase().includes('overhead'));
+                const totalCostKey = Object.keys(part).find(k => k.trim().toLowerCase() === 'total cost');
+                
+                if (moldKey && part[moldKey]) content += `<div class="cost-item"><span class="label">Mold</span><span class="value">${part[moldKey]}</span></div>`;
+                if (weightKey && part[weightKey]) content += `<div class="cost-item"><span class="label">Part Weight</span><span class="value">${part[weightKey]} lb</span></div>`;
+                if (laborKey && part[laborKey]) content += `<div class="cost-item"><span class="label">Labor/Part</span><span class="value">${formatCurrency(parseNumber(part[laborKey]))}</span></div>`;
+                if (overheadKey && part[overheadKey]) content += `<div class="cost-item"><span class="label">Overhead</span><span class="value">${formatCurrency(parseNumber(part[overheadKey]))}</span></div>`;
+                if (totalCostKey && part[totalCostKey]) content += `<div class="cost-item"><span class="label">Total Cost</span><span class="value">${formatCurrency(parseNumber(part[totalCostKey]))}</span></div>`;
+                content += `</div></div>`;
+                
+                // Components
+                content += `<div class="bom-section"><h4>Components</h4><div class="component-list">`;
+                for (let i = 1; i <= 5; i++) {
+                    const compKey = Object.keys(part).find(k => k.trim() === `Component ${i}`);
+                    const qtyKey = Object.keys(part).find(k => k.trim() === `Component ${i} Qty.`);
+                    const costKey = Object.keys(part).find(k => k.trim() === `Component ${i} cost`);
+                    if (compKey && part[compKey] && part[compKey] !== 'nan') {
+                        content += `<div class="component-item"><span class="name">${part[compKey]}</span><span class="details"><span>Qty: ${qtyKey ? part[qtyKey] : '-'}</span><span>Cost: ${costKey ? formatCurrency(parseNumber(part[costKey])) : '-'}</span></span></div>`;
+                    }
                 }
-            });
-            content += '</div></div>';
+                content += `</div></div>`;
+            } else {
+                // Final Assembly: Components, Labor, Overhead, Costs, Sales Target
+                content = `<div class="bom-section"><h4>Assembly Info</h4><div class="cost-breakdown">`;
+                const pppKey = Object.keys(part).find(k => k.trim().toLowerCase().includes('parts per package'));
+                const laborKey = Object.keys(part).find(k => k.trim().toLowerCase().includes('labor cost / finished'));
+                const varCostKey = Object.keys(part).find(k => k.trim().toLowerCase() === 'variable cost');
+                const totalCostKey = Object.keys(part).find(k => k.trim().toLowerCase() === 'total cost');
+                const profitKey = Object.keys(part).find(k => k.trim().toLowerCase().includes('profit target'));
+                const salesKey = Object.keys(part).find(k => k.trim().toLowerCase().includes('sales target'));
+                
+                if (pppKey && part[pppKey]) content += `<div class="cost-item"><span class="label">Parts/Package</span><span class="value">${part[pppKey]}</span></div>`;
+                if (laborKey && part[laborKey]) content += `<div class="cost-item"><span class="label">Labor Cost</span><span class="value">${formatCurrency(parseNumber(part[laborKey]))}</span></div>`;
+                if (varCostKey && part[varCostKey]) content += `<div class="cost-item"><span class="label">Variable Cost</span><span class="value">${formatCurrency(parseNumber(part[varCostKey]))}</span></div>`;
+                if (totalCostKey && part[totalCostKey]) content += `<div class="cost-item"><span class="label">Total Cost</span><span class="value">${formatCurrency(parseNumber(part[totalCostKey]))}</span></div>`;
+                content += `</div></div>`;
+                
+                // Highlight box for profit target and sales target
+                if ((profitKey && part[profitKey]) || (salesKey && part[salesKey])) {
+                    content += `<div class="highlight-box">`;
+                    if (profitKey && part[profitKey]) content += `<div class="item"><div class="value">${formatCurrency(parseNumber(part[profitKey]))}</div><div class="label">Profit Target</div></div>`;
+                    if (salesKey && part[salesKey]) content += `<div class="item"><div class="value">${formatCurrency(parseNumber(part[salesKey]))}</div><div class="label">Sales Target</div></div>`;
+                    content += `</div>`;
+                }
+                
+                // Components
+                content += `<div class="bom-section"><h4>Components</h4><div class="component-list">`;
+                for (let i = 1; i <= 13; i++) {
+                    const compKey = Object.keys(part).find(k => k.trim() === `Component ${i}`);
+                    const qtyKey = Object.keys(part).find(k => k.trim() === `Component ${i} Qty.`);
+                    const costKey = Object.keys(part).find(k => k.trim() === `Component ${i} Cost.`);
+                    if (compKey && part[compKey] && part[compKey] !== 'nan' && !String(part[compKey]).startsWith('nan')) {
+                        content += `<div class="component-item"><span class="name">${part[compKey]}</span><span class="details"><span>Qty: ${qtyKey && part[qtyKey] && part[qtyKey] !== 'nan' ? part[qtyKey] : '-'}</span><span>Cost: ${costKey && part[costKey] && part[costKey] !== 'nan' ? formatCurrency(parseNumber(part[costKey])) : '-'}</span></span></div>`;
+                    }
+                }
+                content += `</div></div>`;
+            }
             
             document.getElementById('bomContent').innerHTML = content;
         }
 
-        // ===== INITIALIZE =====
         window.addEventListener('DOMContentLoaded', loadDashboard);
     </script>
 </body>
